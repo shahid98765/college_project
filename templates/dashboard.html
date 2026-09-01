@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}
+Medicine Inventory Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Good Morning, {{ session.get('name', 'Administrator') }}</h2>
+        <p class="page-header-sub">Manage your pharmacy inventory and daily operations.</p>
+    </div>
+</div>
+
+<!-- ================= DASHBOARD CARDS ================= -->
+
+<div class="dashboard-cards">
+
+    <div class="card blue">
+        <div>
+            <h3>&#8377; {{ "%.2f"|format(today_sales) }}</h3>
+            <p>Today's Sales</p>
+        </div>
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+    </div>
+
+    <div class="card orange">
+        <div>
+            <h3>{{ low_stock }}</h3>
+            <p>Low Stock</p>
+        </div>
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+
+    <div class="card red">
+        <div>
+            <h3>{{ expiring_soon }}</h3>
+            <p>Expiring Soon</p>
+        </div>
+        <i class="fa-solid fa-calendar-xmark"></i>
+    </div>
+
+    <div class="card teal">
+        <div>
+            <h3>{{ total_products }}</h3>
+            <p>Total Medicines</p>
+        </div>
+        <i class="fa-solid fa-capsules"></i>
+    </div>
+
+    <div class="card purple">
+        <div>
+            <h3>&#8377; {{ "%.2f"|format(inventory_value) }}</h3>
+            <p>Inventory Value</p>
+        </div>
+        <i class="fa-solid fa-warehouse"></i>
+    </div>
+
+    <div class="card green">
+        <div>
+            <h3>&#8377; {{ "%.2f"|format(monthly_sales) }}</h3>
+            <p>Today's Purchases &nbsp;/&nbsp; Monthly Sales</p>
+        </div>
+        <i class="fa-solid fa-calendar-days"></i>
+    </div>
+
+</div>
+
+<!-- ================= SECOND ROW ================= -->
+
+<div class="dashboard-cards">
+
+    <div class="card teal">
+        <div>
+            <h3>{{ total_patients }}</h3>
+            <p>Total Patients</p>
+        </div>
+        <i class="fa-solid fa-user-injured"></i>
+    </div>
+
+    <div class="card brown">
+        <div>
+            <h3>{{ total_suppliers }}</h3>
+            <p>Medicine Suppliers</p>
+        </div>
+        <i class="fa-solid fa-truck-medical"></i>
+    </div>
+
+    <div class="card red">
+        <div>
+            <h3>{{ expired_count }}</h3>
+            <p>Expired Medicines</p>
+        </div>
+        <i class="fa-solid fa-ban"></i>
+    </div>
+
+    <div class="card green">
+        <div>
+            <h3>{{ safe_medicines }}</h3>
+            <p>Safe Medicines</p>
+        </div>
+        <i class="fa-solid fa-shield-heart"></i>
+    </div>
+
+</div>
+
+<!-- ================= SALES CHART + INVENTORY OVERVIEW ================= -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+        <h3><i class="fa-solid fa-chart-column"></i>Sales Overview</h3>
+        <span class="page-header-sub" style="margin:0;">Last 6 months</span>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="salesChart"></canvas>
+    </div>
+
+</div>
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+        <h3><i class="fa-solid fa-boxes-stacked"></i>Inventory Overview</h3>
+    </div>
+
+    {% set total_inv = (in_stock + low_stock_only + out_of_stock) %}
+
+    <div class="inv-overview-row">
+        <span class="inv-overview-label">In Stock</span>
+        <div class="inv-overview-track">
+            <div class="inv-overview-fill" style="width:{{ ((in_stock / total_inv * 100) if total_inv else 0)|round(0, 'floor') }}%; background:var(--success);"></div>
+        </div>
+        <span class="inv-overview-value">{{ ((in_stock / total_inv * 100) if total_inv else 0)|round(0, 'floor')|int }}%</span>
+    </div>
+
+    <div class="inv-overview-row">
+        <span class="inv-overview-label">Low Stock</span>
+        <div class="inv-overview-track">
+            <div class="inv-overview-fill" style="width:{{ ((low_stock_only / total_inv * 100) if total_inv else 0)|round(0, 'floor') }}%; background:var(--warning);"></div>
+        </div>
+        <span class="inv-overview-value">{{ ((low_stock_only / total_inv * 100) if total_inv else 0)|round(0, 'floor')|int }}%</span>
+    </div>
+
+    <div class="inv-overview-row">
+        <span class="inv-overview-label">Out of Stock</span>
+        <div class="inv-overview-track">
+            <div class="inv-overview-fill" style="width:{{ ((out_of_stock / total_inv * 100) if total_inv else 0)|round(0, 'floor') }}%; background:var(--danger);"></div>
+        </div>
+        <span class="inv-overview-value">{{ ((out_of_stock / total_inv * 100) if total_inv else 0)|round(0, 'floor')|int }}%</span>
+    </div>
+
+</div>
+
+<!-- ================= RECENT SALES ================= -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+        <h3><i class="fa-solid fa-receipt"></i>Recent Sales</h3>
+        <a href="{{ url_for('sales_history') }}" class="section-link">View All</a>
+    </div>
+
+    {% if recent_sales %}
+
+    <div class="table-container">
+    <table class="table">
+
+        <thead>
+
+        <tr>
+
+            <th>Invoice</th>
+            <th>Patient ID</th>
+            <th>Total Amount</th>
+            <th>Date</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for sale in recent_sales %}
+
+            <tr>
+
+                <td>#{{ sale.id }}</td>
+
+                <td>{{ sale.customer_id }}</td>
+
+                <td>&#8377; {{ "%.2f"|format(sale.total) }}</td>
+
+                <td>{{ sale.date.strftime("%d-%m-%Y %I:%M %p") }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+        <i class="fa-solid fa-receipt"></i>
+        <h4>No recent sales</h4>
+        <p>Sales completed through the POS will appear here.</p>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<!-- ================= EXPIRY ALERT TABLE ================= -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <h3>
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Medicines Expiring Soon
+        </h3>
+
+        <a href="{{ url_for('expiry_alerts') }}" class="section-link">View All Expiry Alerts</a>
+
+    </div>
+
+    {% if expiry_products %}
+
+    <div class="table-container">
+    <table class="table">
+
+        <thead>
+
+        <tr>
+
+            <th>Medicine</th>
+            <th>Batch No.</th>
+            <th>Barcode</th>
+            <th>Expiry Date</th>
+            <th>Stock</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for batch in expiry_products %}
+
+            <tr>
+
+                <td>{{ batch.product.name if batch.product else "Unknown Medicine" }}</td>
+
+                <td>{{ batch.batch_no }}</td>
+
+                <td>{{ batch.barcode }}</td>
+
+                <td>{{ batch.expiry_date.strftime("%d-%m-%Y") if batch.expiry_date else "-" }}</td>
+
+                <td>{{ batch.quantity_remaining }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+    </div>
+
+    {% else %}
+
+    <div class="empty-state">
+        <i class="fa-solid fa-calendar-check"></i>
+        <h4>No expiry alerts</h4>
+        <p>No medicines expiring in the next 180 days.</p>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+
+const ctx = document.getElementById('salesChart');
+
+new Chart(ctx, {
+
+    type: 'bar',
+
+    data: {
+
+        labels: {{ chart_labels|tojson }},
+
+        datasets: [
+
+            {
+
+                label: 'Sales (₹)',
+
+                data: {{ chart_values|tojson }},
+                backgroundColor: '#0B8F6A',
+                borderRadius: 6,
+                maxBarThickness: 46
+
+            }
+
+        ]
+
+    },
+
+    options: {
+
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins: {
+
+            legend: {
+
+                display: false
+
+            }
+
+        },
+
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: '#EEF1F0' }
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

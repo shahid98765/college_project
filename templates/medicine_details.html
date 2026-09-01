@@ -1,0 +1,818 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+Medicine Details
+
+{% endblock %}
+
+
+
+{% block page_title %}
+
+Medicine Details
+
+{% endblock %}
+
+
+
+
+
+{% block content %}
+
+
+
+<div class="page-header">
+
+
+    <h2>
+
+        <i class="fa-solid fa-pills"></i>
+
+        Medicine Details
+
+    </h2>
+
+
+
+    <a href="{{ url_for('medicines') }}" 
+       class="btn btn-secondary">
+
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Back
+
+
+    </a>
+
+
+</div>
+
+
+
+
+
+<!-- Medicine Information -->
+
+
+<div class="dashboard-section">
+
+
+<div class="section-header">
+
+
+<h3>
+
+<i class="fa-solid fa-capsules"></i>
+
+Medicine Information
+
+</h3>
+
+
+</div>
+
+
+
+
+<table class="table">
+
+
+<tbody>
+
+
+
+<tr>
+
+<th width="250">
+
+Medicine ID
+
+</th>
+
+
+<td>
+
+{{ medicine.id }}
+
+</td>
+
+
+</tr>
+
+
+
+
+<tr>
+
+<th>
+
+Medicine Name
+
+</th>
+
+
+<td>
+
+{{ medicine.name }}
+
+</td>
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Category
+
+</th>
+
+
+<td>
+
+{{ medicine.category }}
+
+</td>
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Company
+
+</th>
+
+
+<td>
+
+{{ medicine.company }}
+
+</td>
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Batch Number
+
+</th>
+
+
+<td>
+
+{{ medicine.batch_no }}
+
+</td>
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Expiry Date
+
+</th>
+
+
+<td>
+
+
+{{ medicine.expiry_date.strftime("%d-%m-%Y") }}
+
+
+</td>
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Purchase Price
+
+</th>
+
+
+<td>
+
+₹ {{ "%.2f"|format(medicine.purchase_price) }}
+
+</td>
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Selling Price
+
+</th>
+
+
+<td>
+
+₹ {{ "%.2f"|format(medicine.price) }}
+
+</td>
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+<th>
+
+Available Stock
+
+</th>
+
+
+<td>
+
+
+{% if medicine.stock <= 10 %}
+
+
+<span class="badge badge-danger">
+
+{{ medicine.stock }}
+
+</span>
+
+
+{% else %}
+
+
+<span class="badge badge-success">
+
+{{ medicine.stock }}
+
+</span>
+
+
+{% endif %}
+
+
+
+</td>
+
+
+</tr>
+
+
+
+
+<tr>
+
+<th>
+
+Supplier
+
+</th>
+
+
+<td>
+
+{% if medicine.supplier %}
+
+{{ medicine.supplier.name }}
+
+{% else %}
+
+-
+
+{% endif %}
+
+</td>
+
+
+</tr>
+
+
+
+</tbody>
+
+
+</table>
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- Purchase History -->
+
+
+<div class="dashboard-section">
+
+
+<div class="section-header">
+
+
+<h3>
+
+<i class="fa-solid fa-cart-flatbed"></i>
+
+Purchase History
+
+</h3>
+
+
+</div>
+
+
+
+
+<div class="table-container">
+
+
+<table class="table">
+
+
+<thead>
+
+
+<tr>
+
+
+<th>
+
+Purchase ID
+
+</th>
+
+
+<th>
+
+Supplier
+
+</th>
+
+
+<th>
+
+Quantity
+
+</th>
+
+
+<th>
+
+Cost
+
+</th>
+
+
+<th>
+
+Date
+
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+
+<tbody>
+
+
+
+
+{% if purchases %}
+
+
+
+
+
+{% for purchase in purchases %}
+
+
+
+<tr>
+
+
+
+<td>
+
+{{ purchase.id }}
+
+</td>
+
+
+
+<td>
+
+{{ purchase.supplier.name }}
+
+</td>
+
+
+
+<td>
+
+{{ purchase.quantity }}
+
+</td>
+
+
+
+<td>
+
+₹ {{ "%.2f"|format(purchase.cost) }}
+
+</td>
+
+
+
+<td>
+
+{{ purchase.purchase_date.strftime("%d-%m-%Y") }}
+
+</td>
+
+
+
+</tr>
+
+
+
+{% endfor %}
+
+
+
+
+
+{% else %}
+
+
+
+<tr>
+
+
+<td colspan="5" style="text-align:center;">
+
+
+No Purchase History Found
+
+
+</td>
+
+
+</tr>
+
+
+
+{% endif %}
+
+
+
+</tbody>
+
+
+</table>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- Sales History -->
+
+
+<div class="dashboard-section">
+
+
+<div class="section-header">
+
+
+<h3>
+
+
+<i class="fa-solid fa-file-invoice-dollar"></i>
+
+
+Sales History
+
+
+</h3>
+
+
+</div>
+
+
+
+
+
+<div class="table-container">
+
+
+<table class="table">
+
+
+
+<thead>
+
+
+<tr>
+
+
+<th>
+
+Invoice
+
+</th>
+
+
+<th>
+
+Customer
+
+</th>
+
+
+<th>
+
+Quantity
+
+</th>
+
+
+<th>
+
+Amount
+
+</th>
+
+
+<th>
+
+Date
+
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+
+
+<tbody>
+
+
+
+
+{% if sales %}
+
+
+
+
+
+{% for item in sales %}
+
+
+
+
+
+<tr>
+
+
+
+<td>
+
+INV-{{ "%04d"|format(item.sale.id) }}
+
+</td>
+
+
+
+
+<td>
+
+
+{% if item.sale.customer %}
+
+
+{{ item.sale.customer.name }}
+
+
+{% else %}
+
+
+Walk-in Customer
+
+
+{% endif %}
+
+
+
+</td>
+
+
+
+
+<td>
+
+{{ item.quantity }}
+
+</td>
+
+
+
+
+
+<td>
+
+
+₹ {{ "%.2f"|format(item.quantity * item.price) }}
+
+
+</td>
+
+
+
+
+
+<td>
+
+
+{{ item.sale.date.strftime("%d-%m-%Y") }}
+
+
+</td>
+
+
+
+
+</tr>
+
+
+
+
+{% endfor %}
+
+
+
+
+
+{% else %}
+
+
+
+<tr>
+
+
+<td colspan="5" style="text-align:center;">
+
+
+No Sales History Found
+
+
+</td>
+
+
+</tr>
+
+
+
+{% endif %}
+
+
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- Buttons -->
+
+
+<div class="form-buttons">
+
+
+<a href="{{ url_for('edit_medicine', id=medicine.id) }}"
+   class="btn btn-warning">
+
+
+<i class="fa-solid fa-pen"></i>
+
+Edit Medicine
+
+
+</a>
+
+
+
+
+
+<a href="{{ url_for('delete_medicine', id=medicine.id) }}"
+   class="btn btn-danger"
+   onclick="return confirmDelete('Delete this medicine?')">
+
+
+<i class="fa-solid fa-trash"></i>
+
+Delete Medicine
+
+
+</a>
+
+
+
+
+
+<a href="{{ url_for('medicines') }}"
+   class="btn btn-secondary">
+
+
+<i class="fa-solid fa-arrow-left"></i>
+
+Back To Medicines
+
+
+</a>
+
+
+
+</div>
+
+
+
+
+{% endblock %}

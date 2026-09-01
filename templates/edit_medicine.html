@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Medicine{% endblock %}
+
+{% block page_title %}Edit Medicine{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <div class="form-card">
+
+        <h2>
+            <i class="fa-solid fa-pills"></i>
+            Edit Medicine
+        </h2>
+
+        <form action="{{ url_for('edit_product', id=product.id) }}"
+              method="POST"
+              enctype="multipart/form-data">
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Medicine Code</label>
+                    <input type="text"
+                           name="code"
+                           value="{{ product.code }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Medicine Name</label>
+                    <input type="text"
+                           name="name"
+                           value="{{ product.name }}"
+                           required>
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Manufacturer</label>
+                    <input type="text"
+                           name="brand"
+                           value="{{ product.brand }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+
+                    <label>Category</label>
+
+                    <select name="category" required>
+
+                        <option value="Tablet" {% if product.category=="Tablet" %}selected{% endif %}>Tablet</option>
+                        <option value="Capsule" {% if product.category=="Capsule" %}selected{% endif %}>Capsule</option>
+                        <option value="Syrup" {% if product.category=="Syrup" %}selected{% endif %}>Syrup</option>
+                        <option value="Injection" {% if product.category=="Injection" %}selected{% endif %}>Injection</option>
+                        <option value="Cream" {% if product.category=="Cream" %}selected{% endif %}>Cream</option>
+                        <option value="Ointment" {% if product.category=="Ointment" %}selected{% endif %}>Ointment</option>
+                        <option value="Drops" {% if product.category=="Drops" %}selected{% endif %}>Drops</option>
+                        <option value="Inhaler" {% if product.category=="Inhaler" %}selected{% endif %}>Inhaler</option>
+                        <option value="Gel" {% if product.category=="Gel" %}selected{% endif %}>Gel</option>
+                        <option value="Powder" {% if product.category=="Powder" %}selected{% endif %}>Powder</option>
+                        <option value="Medical Device" {% if product.category=="Medical Device" %}selected{% endif %}>Medical Device</option>
+                        <option value="First Aid" {% if product.category=="First Aid" %}selected{% endif %}>First Aid</option>
+                        <option value="Surgical Item" {% if product.category=="Surgical Item" %}selected{% endif %}>Surgical Item</option>
+                        <option value="Health Supplement" {% if product.category=="Health Supplement" %}selected{% endif %}>Health Supplement</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number"
+                           step="0.01"
+                           name="price"
+                           value="{{ product.price }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Stock Quantity</label>
+                    <input type="number"
+                           name="stock"
+                           value="{{ product.stock }}"
+                           required>
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Batch Number</label>
+                    <input type="text"
+                           name="batch_no"
+                           value="{{ product.batch_no or '' }}"
+                           required>
+                </div>
+
+                <div class="form-group">
+
+                    <label>Manufacture Date</label>
+
+                    <input type="date"
+                           name="manufacture_date"
+                           value="{{ product.manufacture_date.strftime('%Y-%m-%d') if product.manufacture_date else '' }}">
+
+                </div>
+
+            </div>
+
+            <!-- NEW EXPIRY DATE -->
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>Expiry Date</label>
+
+                    <input type="date"
+                           name="expiry_date"
+                           value="{{ product.expiry_date.strftime('%Y-%m-%d') if product.expiry_date else '' }}"
+                           required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Current Image</label>
+
+                    <br><br>
+
+                    <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
+                         width="150"
+                         class="product-image">
+
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Change Medicine Image</label>
+
+                <input type="file"
+                       name="image"
+                       accept="image/*">
+
+            </div>
+
+            <div class="form-buttons">
+
+                <button type="submit"
+                        class="btn btn-success">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    Update Medicine
+
+                </button>
+
+                <a href="{{ url_for('product_list') }}"
+                   class="btn btn-secondary">
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Back
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

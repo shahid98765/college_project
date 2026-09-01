@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+            Jan Seva Pharmacy
+        {% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- Sidebar -->
+    {% include 'sidebar.html' %}
+
+    <!-- Main Content -->
+
+    <div class="main">
+
+        <!-- ==========================
+             TOP BAR
+        =========================== -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Open menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <h2>
+
+                    {% block page_title %}
+                        Dashboard
+                    {% endblock %}
+
+                </h2>
+
+            </div>
+
+            <form class="topbar-search" action="{{ url_for('product_list') }}" method="GET">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="search" placeholder="Search medicine, batch, brand...">
+            </form>
+
+            <div class="topbar-right">
+
+                <a href="{{ url_for('expiry_alerts') }}" class="topbar-icon-btn" title="Expiry &amp; low-stock alerts">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="dot"></span>
+                </a>
+
+                <span class="welcome">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    <span class="welcome-text">{{ session.get('name', 'Administrator') }}</span>
+                </span>
+
+                <a href="{{ url_for('logout') }}"
+                   class="logout-btn">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </a>
+
+            </div>
+
+        </header>
+
+        <!-- ==========================
+             FLASH MESSAGES
+        =========================== -->
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                {% for category, message in messages %}
+
+                    <div class="alert alert-{{ category }}">
+                        <i class="fa-solid fa-circle-info"></i>
+                        {{ message }}
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+        <!-- ==========================
+             PAGE CONTENT
+        =========================== -->
+
+        <div class="content">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% block scripts %}
+
+{% endblock %}
+
+</body>
+</html>

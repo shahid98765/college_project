@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Details{% endblock %}
+
+{% block page_title %}
+Customer Details
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+
+        <i class="fa-solid fa-user"></i>
+
+        Customer Details
+
+    </h2>
+
+    <a href="{{ url_for('customers') }}" class="btn btn-secondary">
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Back
+
+    </a>
+
+</div>
+
+
+<!-- Customer Information -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <h3>
+
+            <i class="fa-solid fa-address-card"></i>
+
+            Customer Information
+
+        </h3>
+
+    </div>
+
+    <table class="table">
+
+        <tbody>
+
+            <tr>
+
+                <th width="220">Customer ID</th>
+
+                <td>{{ customer.id }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Name</th>
+
+                <td>{{ customer.name }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Phone</th>
+
+                <td>{{ customer.phone }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Email</th>
+
+                <td>{{ customer.email or "-" }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Total Bills</th>
+
+                <td>{{ sales|length }}</td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<!-- Purchase History -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <h3>
+
+            <i class="fa-solid fa-file-medical"></i>
+
+            Medicine Purchase History
+
+        </h3>
+
+    </div>
+
+    <div class="table-container">
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Invoice</th>
+
+                    <th>Date</th>
+
+                    <th>Payment</th>
+
+                    <th>Subtotal</th>
+
+                    <th>Discount</th>
+
+                    <th>GST</th>
+
+                    <th>Total</th>
+
+                    <th>Invoice</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% if sales %}
+
+                {% for sale in sales %}
+
+                <tr>
+
+                    <td>
+
+                        INV-{{ "%04d"|format(sale.id) }}
+
+                    </td>
+
+                    <td>
+
+                        {{ sale.date.strftime("%d-%m-%Y %I:%M %p") }}
+
+                    </td>
+
+                    <td>
+
+                        {{ sale.payment_method }}
+
+                    </td>
+
+                    <td>
+
+                        ₹ {{ "%.2f"|format(sale.subtotal) }}
+
+                    </td>
+
+                    <td>
+
+                        ₹ {{ "%.2f"|format(sale.discount) }}
+
+                    </td>
+
+                    <td>
+
+                        ₹ {{ "%.2f"|format(sale.tax) }}
+
+                    </td>
+
+                    <td>
+
+                        <strong>
+
+                            ₹ {{ "%.2f"|format(sale.total) }}
+
+                        </strong>
+
+                    </td>
+
+                    <td>
+
+                        <a href="{{ url_for('invoice', sale_id=sale.id) }}"
+                           class="btn btn-info">
+
+                            <i class="fa-solid fa-file-invoice"></i>
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="8" style="text-align:center;">
+
+                        No Purchase History Found
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- Buttons -->
+
+<div class="form-buttons">
+
+    <a href="{{ url_for('edit_customer', id=customer.id) }}"
+       class="btn btn-warning">
+
+        <i class="fa-solid fa-pen"></i>
+
+        Edit Customer
+
+    </a>
+
+    <a href="{{ url_for('delete_customer', id=customer.id) }}"
+       class="btn btn-danger"
+       onclick="return confirm('Delete this customer?')">
+
+        <i class="fa-solid fa-trash"></i>
+
+        Delete Customer
+
+    </a>
+
+    <a href="{{ url_for('customers') }}"
+       class="btn btn-secondary">
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Back
+
+    </a>
+
+</div>
+
+{% endblock %}

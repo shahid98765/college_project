@@ -1,0 +1,769 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block page_title %}Reports & Analytics{% endblock %}
+
+{% block content %}
+
+<!-- ============================= -->
+<!-- SUMMARY CARDS -->
+<!-- ============================= -->
+
+<div class="dashboard-cards">
+
+    <div class="card blue">
+
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+
+        <div>
+
+            <h3>₹ {{ "%.2f"|format(revenue) }}</h3>
+
+            <p>Total Revenue</p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card green">
+
+        <i class="fa-solid fa-box"></i>
+
+        <div>
+
+            <h3>{{ total_products }}</h3>
+
+            <p>Total Products</p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card orange">
+
+        <i class="fa-solid fa-cart-shopping"></i>
+
+        <div>
+
+            <h3>{{ total_sales }}</h3>
+
+            <p>Total Sales</p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card purple">
+
+        <i class="fa-solid fa-users"></i>
+
+        <div>
+
+            <h3>{{ total_patients }}</h3>
+
+            <p>Total Customers</p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card red">
+
+        <i class="fa-solid fa-truck"></i>
+
+        <div>
+
+            <h3>{{ total_suppliers }}</h3>
+
+            <p>Total Suppliers</p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card brown">
+
+        <i class="fa-solid fa-warehouse"></i>
+
+        <div>
+
+            <h3>₹ {{ "%.2f"|format(inventory_value) }}</h3>
+
+            <p>Inventory Value</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<br>
+
+<!-- ============================= -->
+<!-- SALES CHART -->
+<!-- ============================= -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+        <h3>
+            <i class="fa-solid fa-chart-line"></i>
+            Daily Sales Report
+        </h3>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="dailyChart"></canvas>
+    </div>
+
+</div>
+
+<br>
+
+<!-- ============================= -->
+<!-- MONTHLY SALES -->
+<!-- ============================= -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+        <h3>
+            <i class="fa-solid fa-chart-column"></i>
+            Monthly Sales
+        </h3>
+        <span class="page-header-sub" style="margin:0;">Last 6 months</span>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="monthlyChart"></canvas>
+    </div>
+
+</div>
+
+<br>
+
+<!-- ============================= -->
+<!-- INVENTORY SUMMARY -->
+<!-- ============================= -->
+
+<div class="dashboard-section">
+
+    <h3>
+
+        <i class="fa-solid fa-boxes-stacked"></i>
+
+        Inventory Summary
+
+    </h3>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>Item</th>
+
+                <th>Total</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+
+                <td>Total Products</td>
+
+                <td>{{ total_products }}</td>
+
+            </tr>
+
+            <tr>
+
+                <td>Total Customers</td>
+
+                <td>{{ total_patients }}</td>
+
+            </tr>
+
+            <tr>
+
+                <td>Total Suppliers</td>
+
+                <td>{{ total_suppliers }}</td>
+
+            </tr>
+
+            <tr>
+
+                <td>Total Sales</td>
+
+                <td>{{ total_sales }}</td>
+
+            </tr>
+
+            <tr>
+
+                <td>Inventory Value</td>
+
+                <td>
+
+                    ₹ {{ "%.2f"|format(inventory_value) }}
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>Total Revenue</td>
+
+                <td>
+
+                    ₹ {{ "%.2f"|format(revenue) }}
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<br>
+<!-- ============================= -->
+<!-- TOP SELLING PRODUCTS -->
+<!-- ============================= -->
+
+<div class="dashboard-section">
+
+    <h3>
+
+        <i class="fa-solid fa-trophy"></i>
+
+        Top Selling Products
+
+    </h3>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>#</th>
+
+                <th>Product</th>
+
+                <th>Quantity Sold</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% if top_products %}
+
+            {% for product in top_products %}
+
+            <tr>
+
+                <td>{{ loop.index }}</td>
+
+                <td>{{ product.name }}</td>
+
+                <td>{{ product.quantity_sold }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+
+                <td colspan="3" style="text-align:center;">
+
+                    No sales available.
+
+                </td>
+
+            </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<br>
+
+
+<!-- ============================= -->
+<!-- RECENT SALES -->
+<!-- ============================= -->
+
+<div class="dashboard-section">
+
+    <h3>
+
+        <i class="fa-solid fa-clock-rotate-left"></i>
+
+        Recent Sales
+
+    </h3>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>Invoice</th>
+
+                <th>Date</th>
+
+                <th>Customer</th>
+
+                <th>Payment</th>
+
+                <th>Total</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% if recent_sales %}
+
+            {% for sale in recent_sales %}
+
+            <tr>
+
+                <td>#{{ sale.id }}</td>
+
+                <td>{{ sale.date.strftime("%d-%m-%Y") }}</td>
+
+                <td>
+
+                    {% if sale.customer %}
+                        {{ sale.customer.name }}
+                    {% else %}
+                        Walk-in Customer
+                    {% endif %}
+
+                </td>
+
+                <td>{{ sale.payment_method }}</td>
+
+                <td>
+
+                    ₹ {{ "%.2f"|format(sale.total) }}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+
+                <td colspan="5" style="text-align:center;">
+
+                    No sales found.
+
+                </td>
+
+            </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<br>
+
+
+<!-- ============================= -->
+<!-- SALES SUMMARY -->
+<!-- ============================= -->
+
+<div class="dashboard-section">
+
+    <h3>
+
+        <i class="fa-solid fa-chart-pie"></i>
+
+        Sales Statistics
+
+    </h3>
+
+    <table class="table">
+
+        <tbody>
+
+            <tr>
+
+                <th>Total Sales</th>
+
+                <td>{{ total_sales }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Total Revenue</th>
+
+                <td>
+
+                    ₹ {{ "%.2f"|format(revenue) }}
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>Total Customers</th>
+
+                <td>{{ total_patients }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Total Suppliers</th>
+
+                <td>{{ total_suppliers }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Total Products</th>
+
+                <td>{{ total_products }}</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Inventory Value</th>
+
+                <td>
+
+                    ₹ {{ "%.2f"|format(inventory_value) }}
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<br>
+<!-- ========================================================== -->
+<!-- LOW STOCK PRODUCTS -->
+<!-- ========================================================== -->
+
+<div class="dashboard-section">
+
+    <h3>
+
+        <i class="fa-solid fa-triangle-exclamation"></i>
+
+        Low Stock Products
+
+    </h3>
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>ID</th>
+
+                <th>Code</th>
+
+                <th>Product</th>
+
+                <th>Category</th>
+
+                <th>Stock</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% if low_stock_products %}
+
+            {% for product in low_stock_products %}
+
+            <tr>
+
+                <td>{{ product.id }}</td>
+
+                <td>{{ product.code }}</td>
+
+                <td>{{ product.name }}</td>
+
+                <td>{{ product.category }}</td>
+
+                <td>
+
+                    <span class="badge badge-danger">
+
+                        {{ product.stock }}
+
+                    </span>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+
+                <td colspan="5" style="text-align:center;">
+
+                    No Low Stock Products
+
+                </td>
+
+            </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<br>
+
+<!-- ========================================================== -->
+<!-- QUICK REPORTS -->
+<!-- ========================================================== -->
+
+<div class="dashboard-section">
+
+    <h3>
+
+        <i class="fa-solid fa-file-lines"></i>
+
+        Quick Reports
+
+    </h3>
+
+    <div class="report-buttons">
+
+        <a href="{{ url_for('daily_report') }}"
+           class="btn btn-primary">
+
+            <i class="fa-solid fa-calendar-day"></i>
+
+            Daily Report
+
+        </a>
+
+        <a href="{{ url_for('low_stock_report') }}"
+           class="btn btn-warning">
+
+            <i class="fa-solid fa-box-open"></i>
+
+            Low Stock Report
+
+        </a>
+
+        <a href="{{ url_for('sales_history') }}"
+           class="btn btn-success">
+
+            <i class="fa-solid fa-clock-rotate-left"></i>
+
+            Sales History
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+<script>
+
+// ==============================
+// DAILY SALES CHART
+// ==============================
+
+const dailyChart = document.getElementById("dailyChart");
+
+if (dailyChart) {
+
+    new Chart(dailyChart, {
+
+        type: "line",
+
+        data: {
+
+            labels: {{ sales_labels|tojson }},
+
+            datasets: [{
+
+                label: "Daily Sales (₹)",
+
+                data: {{ sales_values|tojson }},
+
+                borderColor: "#0B8F6A",
+
+                backgroundColor: "rgba(11,143,106,.12)",
+
+                pointBackgroundColor: "#0B8F6A",
+
+                borderWidth: 3,
+
+                fill: true,
+
+                tension: 0.35
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: { display: false }
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+                    grid: { color: "#EEF1F0" }
+
+                },
+
+                x: {
+                    grid: { display: false }
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+
+
+// ==============================
+// MONTHLY SALES CHART
+// ==============================
+
+const monthlyChart = document.getElementById("monthlyChart");
+
+if (monthlyChart) {
+
+    new Chart(monthlyChart, {
+
+        type: "bar",
+
+        data: {
+
+            labels: {{ monthly_labels|tojson }},
+
+            datasets: [{
+
+                label: "Monthly Revenue (₹)",
+
+                data: {{ monthly_values|tojson }},
+
+                backgroundColor: "#0F9D9A",
+
+                borderRadius: 6,
+
+                maxBarThickness: 46
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: { display: false }
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+                    grid: { color: "#EEF1F0" }
+
+                },
+
+                x: {
+                    grid: { display: false }
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+</script>
+
+{% endblock %}

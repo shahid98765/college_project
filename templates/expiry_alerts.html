@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Expiry Alerts{% endblock %}
+
+{% block page_title %}Medicine Expiry Alerts{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h2>
+        <i class="fa-solid fa-calendar-xmark"></i>
+        Medicine Expiry Alerts
+    </h2>
+</div>
+
+{% macro batch_table(title, batches, color, icon) %}
+
+<div class="dashboard-section">
+
+    <h3 style="color:{{ color }};margin-bottom:20px;">
+        {{ icon }} {{ title }}
+        <span class="badge" style="background:{{ color }};color:#fff;">{{ batches|length }}</span>
+    </h3>
+
+    <div class="table-container">
+
+        <table class="table">
+
+            <thead>
+            <tr>
+                <th>Medicine</th>
+                <th>Batch No.</th>
+                <th>Barcode</th>
+                <th>Remaining Stock</th>
+                <th>Expiry Date</th>
+                <th>Days Remaining</th>
+                <th>Supplier</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            {% for batch in batches %}
+            <tr>
+                <td>{{ batch.product.name if batch.product else "Unknown Medicine" }}</td>
+                <td>{{ batch.batch_no or "-" }}</td>
+                <td>{{ batch.barcode or "-" }}</td>
+                <td>{{ batch.quantity_remaining }}</td>
+                <td>{{ batch.expiry_date.strftime('%d-%m-%Y') if batch.expiry_date else "-" }}</td>
+                <td>{{ batch.expiry_date|days_left if batch.expiry_date else "-" }}</td>
+                <td>{{ batch.supplier.name if batch.supplier else "-" }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center">
+                    No batches in this range.
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<br>
+
+{% endmacro %}
+
+{{ batch_table("Expired Medicines", expired, "#dc2626", "🔴") }}
+{{ batch_table("Expiring Within 30 Days", within_30, "#dc2626", "🔴") }}
+{{ batch_table("Expiring Within 60 Days", within_60, "#f97316", "🟠") }}
+{{ batch_table("Expiring Within 90 Days", within_90, "#f97316", "🟠") }}
+{{ batch_table("Expiring Within 180 Days", within_180, "#eab308", "🟡") }}
+
+{% endblock %}

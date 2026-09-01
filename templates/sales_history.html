@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Sales History{% endblock %}
+{% block page_title %}Sales History{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        Sales History
+    </h2>
+
+</div>
+
+<!-- Search -->
+
+<div class="card" style="margin-bottom:20px;">
+
+    <form method="GET"
+          action="{{ url_for('sales_history') }}">
+
+        <div style="display:flex;gap:10px;">
+
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search Invoice, Customer or Payment Method"
+                value="{{ request.args.get('search','') }}">
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                Search
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<div class="card">
+
+    <p>
+
+        <strong>
+
+            Total Sales :
+
+        </strong>
+
+        {{ sales|length }}
+
+    </p>
+
+</div>
+
+<br>
+
+<div class="table-container">
+
+<table class="table">
+
+    <thead>
+
+        <tr>
+
+            <th>Invoice No.</th>
+
+            <th>Customer</th>
+
+            <th>Amount</th>
+
+            <th>Payment</th>
+
+            <th>Date</th>
+
+            <th>Actions</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% if sales %}
+
+        {% for sale in sales %}
+
+        <tr>
+
+            <td>
+
+                <strong>
+
+                    INV-{{ "%05d"|format(sale.id) }}
+
+                </strong>
+
+            </td>
+
+            <td>
+
+                {% if sale.customer %}
+
+                    {{ sale.customer.name }}
+
+                {% else %}
+
+                    Walk-in Customer
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                <strong>
+
+                    ₹ {{ "%.2f"|format(sale.total) }}
+
+                </strong>
+
+            </td>
+
+            <td>
+
+                {% if sale.payment_method == "Cash" %}
+
+                    <span class="badge badge-success">
+
+                        Cash
+
+                    </span>
+
+                {% elif sale.payment_method == "UPI" %}
+
+                    <span class="badge badge-primary">
+
+                        UPI
+
+                    </span>
+
+                {% elif sale.payment_method == "Card" %}
+
+                    <span class="badge badge-warning">
+
+                        Card
+
+                    </span>
+
+                {% else %}
+
+                    <span class="badge badge-secondary">
+
+                        {{ sale.payment_method }}
+
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {{ sale.date.strftime("%d-%m-%Y %I:%M %p") }}
+
+            </td>
+
+            <td>
+
+                <a
+                    href="{{ url_for('invoice', sale_id=sale.id) }}"
+                    class="btn btn-info"
+                    title="View Invoice">
+
+                    <i class="fa-solid fa-file-invoice"></i>
+
+                </a>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="window.open"({{ url_for('invoice', sale_id=sale.id) }}','_blank')"
+                    title="Print Invoice">
+
+                    <i class="fa-solid fa-print"></i>
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <tr>
+
+            <td colspan="6" style="text-align:center;">
+
+                No Sales Found
+
+            </td>
+
+        </tr>
+
+    {% endif %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

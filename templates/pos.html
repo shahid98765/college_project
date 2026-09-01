@@ -1,0 +1,1146 @@
+{% extends "base.html" %}
+
+{% block title %}Point of Sale{% endblock %}
+{% block page_title %}Point of Sale (POS){% endblock %}
+
+{% block content %}
+
+<div class="pos-container">
+
+    <!-- ========================================= -->
+    <!-- PRODUCTS SECTION -->
+    <!-- ========================================= -->
+
+    <div class="products-section">
+
+        <div class="page-header">
+
+            <h2>
+
+                <i class="fa-solid fa-box"></i>
+
+                Products
+
+            </h2>
+
+        </div>
+
+        <!-- Barcode Scanner -->
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="barcodeInput"
+                class="search-input"
+                placeholder="Scan barcode or type it here and press Enter..."
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                autofocus
+                onkeydown="if(event.key === 'Enter'){ event.preventDefault(); scanBarcode(); }">
+
+        </div>
+
+        <br>
+
+        <!-- Search -->
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchProduct"
+                class="search-input"
+                placeholder="Search products by name, brand or category..."
+                onkeyup="searchProducts()">
+
+        </div>
+
+        <br>
+
+        <!-- Product Grid -->
+
+        <div class="product-grid">
+
+            {% if products %}
+
+                {% for product in products %}
+
+                <div class="product-card">
+
+                    <img
+                        src="{{ url_for('static', filename='uploads/' + (product.image or 'default.png')) }}"
+                        alt="{{ product.name }}"
+                        class="product-image">
+
+                    <h4>{{ product.name }}</h4>
+
+                    <p>{{ product.brand }}</p>
+
+                    <small>
+
+                        {{ product.category }}
+
+                    </small>
+
+                    <h3>
+
+                        ₹ {{ "%.2f"|format(product.price) }}
+
+                    </h3>
+
+                    {% if product.stock > 10 %}
+
+                        <span class="badge badge-success">
+
+                            In Stock :
+                            {{ product.stock }}
+
+                        </span>
+
+                    {% elif product.stock > 0 %}
+
+                        <span class="badge badge-warning">
+
+                            Low Stock :
+                            {{ product.stock }}
+
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge badge-danger">
+
+                            Out of Stock
+
+                        </span>
+
+                    {% endif %}
+
+                    <br><br>
+
+                    {% if product.stock > 0 %}
+
+                    <button
+                        type="button"
+                        class="btn btn-primary w-100"
+                        onclick="addProductToCart('{{ product.id }}')">
+
+                        <i class="fa-solid fa-cart-plus"></i>
+
+                        Add To Cart
+
+                    </button>
+
+                    {% else %}
+
+                    <button
+                        class="btn btn-secondary w-100"
+                        disabled>
+
+                        <i class="fa-solid fa-ban"></i>
+
+                        Out Of Stock
+
+                    </button>
+
+                    {% endif %}
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="card">
+
+                    <h3>
+
+                        No Products Available
+
+                    </h3>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- CURRENT SALE -->
+    <!-- ========================================= -->
+
+    <div class="cart-section">
+
+        <div class="page-header">
+
+            <h2>
+
+                <i class="fa-solid fa-cart-shopping"></i>
+
+                Current Sale
+
+            </h2>
+
+        </div>
+
+        <form
+            id="saleForm"
+            method="POST"
+            action="{{ url_for('create_sale') }}">
+            <!-- ========================================= -->
+            <!-- CUSTOMER DETAILS -->
+            <!-- ========================================= -->
+
+            <div class="card">
+
+                <h3>
+
+                    <i class="fa-solid fa-user"></i>
+
+                    Customer Details
+
+                </h3>
+
+                <div class="form-group">
+
+                    <label>
+
+                        Customer Name
+
+                    </label>
+
+                    <input
+                        type="text"
+                        name="customer_name"
+                        class="form-control"
+                        placeholder="Enter Customer Name"
+                        maxlength="50"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+
+                        Mobile Number
+
+                    </label>
+
+                    <input
+                        type="tel"
+                        name="customer_phone"
+                        class="form-control"
+                        placeholder="Enter 10 Digit Mobile Number"
+                        maxlength="10"
+                        pattern="[0-9]{10}"
+                        required>
+
+                </div>
+
+            </div>
+
+            <br>
+
+            <!-- ========================================= -->
+            <!-- CART TABLE -->
+            <!-- ========================================= -->
+
+            <div class="card">
+
+                <h3>
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                    Shopping Cart
+
+                </h3>
+
+                <table
+                    class="table"
+                    id="cartTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+
+                                Product
+
+                            </th>
+
+                            <th width="110">
+
+                                Batch / Expiry
+
+                            </th>
+
+                            <th width="90">
+
+                                Qty
+
+                            </th>
+
+                            <th width="110">
+
+                                Price
+
+                            </th>
+
+                            <th width="120">
+
+                                Total
+
+                            </th>
+
+                            <th width="80">
+
+                                Action
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr id="emptyRow">
+
+                            <td
+                                colspan="6"
+                                style="text-align:center;">
+
+                                No Products Added
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <br>
+
+            <!-- ========================================= -->
+            <!-- ORDER SUMMARY -->
+            <!-- ========================================= -->
+
+            <div class="card">
+
+                <h3>
+
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                    Order Summary
+
+                </h3>
+
+                <table class="table">
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+
+                                Subtotal
+
+                            </strong>
+
+                        </td>
+
+                        <td style="text-align:right;">
+
+                            ₹
+                            <span id="subtotal">
+
+                                0.00
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>
+
+                            Discount
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                id="discount"
+                                name="discount"
+                                class="form-control"
+                                value="0"
+                                min="0"
+                                oninput="calculateTotal()">
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>
+
+                            GST %
+
+                        </td>
+
+                        <td>
+
+                            <input
+                                type="number"
+                                id="tax"
+                                name="tax"
+                                class="form-control"
+                                value="18"
+                                min="0"
+                                max="100"
+                                oninput="calculateTotal()">
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>
+
+                            Payment Method
+
+                        </td>
+
+                        <td>
+
+                            <select
+                                name="payment_method"
+                                id="paymentMethod"
+                                class="form-control"
+                                onchange="togglePaymentNote()">
+
+                                <option value="Cash">
+
+                                    Cash
+
+                                </option>
+
+                                <option value="UPI">
+
+                                    UPI
+
+                                </option>
+
+                                <option value="Card">
+
+                                    Card
+
+                                </option>
+
+                            </select>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+
+                                Grand Total
+
+                            </strong>
+
+                        </td>
+
+                        <td
+                            style="text-align:right;
+                                   font-size:20px;
+                                   font-weight:bold;">
+
+                            ₹
+
+                            <span id="grandTotal">
+
+                                0.00
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                </table>
+
+                <input
+                    type="hidden"
+                    id="grand_total"
+                    name="grand_total">
+                <br>
+
+                <button
+                    type="submit"
+                    class="btn btn-success w-100">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                    Complete Sale
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- UPI PAYMENT VERIFICATION POPUP -->
+    <!-- ========================================= -->
+
+    <div
+        id="upiModalOverlay"
+        style="
+            display:none;
+            position:fixed;
+            top:0; left:0; right:0; bottom:0;
+            background:rgba(0,0,0,0.55);
+            z-index:9999;
+            align-items:center;
+            justify-content:center;">
+
+        <div style="
+            background:#fff;
+            border-radius:12px;
+            padding:25px 30px;
+            width:340px;
+            text-align:center;
+            max-width:90%;">
+
+            <h3 style="margin-top:0;">
+                <i class="fa-solid fa-qrcode"></i>
+                Collect UPI Payment
+            </h3>
+
+            {% if settings.upi_id %}
+
+            <p style="margin-bottom:5px;">Ask the customer to scan &amp; pay:</p>
+
+            <img
+                id="upiQrImage"
+                src=""
+                alt="UPI QR Code"
+                width="200"
+                height="200"
+                style="margin: 10px auto; display:block;">
+
+            <p>
+                UPI ID : <strong>{{ settings.upi_id }}</strong>
+            </p>
+
+            <p style="font-size:18px;">
+                Amount : ₹ <strong id="upiModalAmount">0.00</strong>
+            </p>
+
+            <p style="color:#b45309; font-size:13px;">
+                Only confirm once you have verified the payment
+                actually shows up in your UPI app / bank account.
+            </p>
+
+            <div style="display:flex; gap:10px; margin-top:15px;">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary w-100"
+                    onclick="cancelUpiPayment()">
+                    Cancel
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-success w-100"
+                    onclick="confirmUpiPayment()">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Payment Received
+                </button>
+
+            </div>
+
+            {% else %}
+
+            <p style="color:#b00;">
+                No UPI ID configured yet. Please add one on the
+                <a href="{{ url_for('settings') }}">Settings</a> page
+                before accepting UPI payments.
+            </p>
+
+            <button
+                type="button"
+                class="btn btn-secondary w-100"
+                onclick="cancelUpiPayment()">
+                Close
+            </button>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ========================================= -->
+<!-- JAVASCRIPT -->
+<!-- ========================================= -->
+
+<script>
+
+let cart = [];
+
+/* ==========================================
+   ADD TO CART FROM A RESOLVED BATCH
+   (used by both barcode scan and FEFO search)
+========================================== */
+
+function addBatchToCart(batch, requestedQty){
+
+    requestedQty = parseInt(requestedQty) || 1;
+
+    if(batch.stock <= 0){
+        alert(batch.name + ": out of stock.");
+        return;
+    }
+
+    if(batch.expiry_warning){
+        alert(
+            "Warning: " + batch.name + " (Batch " + batch.batch_no +
+            ") expires on " + batch.expiry_display + "."
+        );
+    }
+
+    let item = cart.find(p => p.batch_id == batch.batch_id);
+
+    if(item){
+
+        if(item.qty + requestedQty > batch.stock){
+            alert("Stock limit exceeded for this batch (" + batch.stock + " available).");
+            return;
+        }
+
+        item.qty += requestedQty;
+
+    } else {
+
+        if(requestedQty > batch.stock){
+            alert("Only " + batch.stock + " item(s) available in this batch.");
+            return;
+        }
+
+        cart.push({
+            product_id: batch.product_id,
+            batch_id: batch.batch_id,
+            name: batch.name,
+            batch_no: batch.batch_no,
+            barcode: batch.barcode,
+            expiry_display: batch.expiry_display,
+            price: parseFloat(batch.price),
+            qty: requestedQty,
+            stock: parseInt(batch.stock)
+        });
+
+    }
+
+    renderCart();
+
+}
+
+/* ==========================================
+   ADD TO CART FROM PRODUCT GRID
+   (auto-selects the FEFO batch -- nearest expiry first)
+========================================== */
+
+function addProductToCart(productId){
+
+    fetch("/api/product_batch/" + encodeURIComponent(productId))
+        .then(r => r.json())
+        .then(match => {
+
+            if(!match.success){
+                alert(match.message || "No available (in-stock, non-expired) batch found for this medicine.");
+                return;
+            }
+
+            let qty = prompt(
+                "Enter Quantity\nBatch: " + match.batch_no +
+                " (Expiry " + match.expiry_display + ")" +
+                "\nAvailable Stock : " + match.stock,
+                1
+            );
+
+            if(qty === null){
+                return;
+            }
+
+            qty = parseInt(qty);
+
+            if(isNaN(qty) || qty <= 0){
+                alert("Please enter a valid quantity.");
+                return;
+            }
+
+            addBatchToCart(match, qty);
+
+        })
+        .catch(() => alert("Could not look up stock. Please try again."));
+
+}
+
+/* ==========================================
+   BARCODE SCANNER SUPPORT
+   Works for real USB scanners (fast keystrokes + Enter)
+   and manual typing (press Enter to search).
+========================================== */
+
+function scanBarcode(){
+
+    let input = document.getElementById("barcodeInput");
+
+    let barcode = input.value.trim();
+
+    if(!barcode){
+        return;
+    }
+
+    fetch("{{ url_for('api_scan_barcode') }}?barcode=" + encodeURIComponent(barcode))
+        .then(r => r.json())
+        .then(data => {
+
+            if(!data.success){
+                alert(data.message || "Barcode not found.");
+                input.value = "";
+                input.focus();
+                return;
+            }
+
+            addBatchToCart(data, 1);
+
+            input.value = "";
+            input.focus();
+
+        })
+        .catch(() => {
+            alert("Could not reach the server to look up this barcode.");
+            input.value = "";
+        });
+
+}
+
+/* ==========================================
+   RENDER CART
+========================================== */
+
+function renderCart(){
+
+    let tbody = document.querySelector("#cartTable tbody");
+
+    tbody.innerHTML = "";
+
+    if(cart.length === 0){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center;">
+                    No Products Added
+                </td>
+            </tr>
+        `;
+
+        calculateTotal();
+
+        return;
+
+    }
+
+    cart.forEach(function(item,index){
+
+        let row = `
+
+        <tr>
+
+            <td>
+
+                ${item.name}
+
+                <input
+                    type="hidden"
+                    name="product_id[]"
+                    value="${item.product_id}">
+
+                <input
+                    type="hidden"
+                    name="batch_id[]"
+                    value="${item.batch_id}">
+
+            </td>
+
+            <td>
+
+                <small>
+                    Batch: ${item.batch_no || "-"}<br>
+                    Exp: ${item.expiry_display || "-"}
+                </small>
+
+            </td>
+
+            <td>
+
+                <input
+
+                    type="number"
+
+                    name="quantity[]"
+
+                    min="1"
+
+                    max="${item.stock}"
+
+                    value="${item.qty}"
+
+                    onchange="updateQuantity(${index}, this.value)"
+
+                    style="width:70px;">
+
+            </td>
+
+            <td>
+
+                ₹ ${item.price.toFixed(2)}
+
+            </td>
+
+            <td>
+
+                ₹ ${(item.price * item.qty).toFixed(2)}
+
+            </td>
+
+            <td>
+
+                <button
+
+                    type="button"
+
+                    class="btn btn-danger"
+
+                    onclick="deleteItem(${index})">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+
+        tbody.innerHTML += row;
+
+    });
+
+    calculateTotal();
+
+}
+function updateQuantity(index, qty){
+
+    qty = parseInt(qty);
+
+    if(isNaN(qty) || qty < 1){
+
+        qty = 1;
+
+    }
+
+    if(qty > cart[index].stock){
+
+        alert(
+            "Maximum available stock in this batch is " +
+            cart[index].stock
+        );
+
+        qty = cart[index].stock;
+
+    }
+
+    cart[index].qty = qty;
+
+    renderCart();
+
+}
+
+
+/* ==========================================
+   DELETE ITEM
+========================================== */
+
+function deleteItem(index){
+
+    if(confirm("Remove this product from cart?")){
+
+        cart.splice(index,1);
+
+        renderCart();
+
+    }
+
+}
+
+
+/* ==========================================
+   CALCULATE TOTAL
+========================================== */
+
+function calculateTotal(){
+
+    let subtotal = 0;
+
+    cart.forEach(function(item){
+
+        subtotal += item.price * item.qty;
+
+    });
+
+    document.getElementById("subtotal").innerHTML =
+        subtotal.toFixed(2);
+
+    let discount = parseFloat(
+        document.getElementById("discount").value
+    ) || 0;
+
+    let gst = parseFloat(
+        document.getElementById("tax").value
+    ) || 0;
+
+    if(discount > subtotal){
+
+        discount = subtotal;
+
+        document.getElementById("discount").value =
+            subtotal;
+
+    }
+
+    let taxable = subtotal - discount;
+
+    let gstAmount = taxable * gst / 100;
+
+    let grandTotal = taxable + gstAmount;
+
+    document.getElementById("grandTotal").innerHTML =
+        grandTotal.toFixed(2);
+
+    document.getElementById("grand_total").value =
+        grandTotal.toFixed(2);
+
+}
+
+
+/* ==========================================
+   SEARCH PRODUCTS
+========================================== */
+
+function searchProducts(){
+
+    let input = document
+        .getElementById("searchProduct")
+        .value
+        .toUpperCase();
+
+    let cards =
+        document.querySelectorAll(".product-card");
+
+    cards.forEach(function(card){
+
+        let text = card.innerText.toUpperCase();
+
+        if(text.indexOf(input) > -1){
+
+            card.style.display = "";
+
+        }
+
+        else{
+
+            card.style.display = "none";
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================
+   UPI PAYMENT VERIFICATION POPUP
+========================================== */
+
+const UPI_ID = {{ (settings.upi_id or "")|tojson }};
+const SHOP_NAME = {{ (settings.shop_name or "Pharmacy")|tojson }};
+
+let upiConfirmed = false;
+
+function togglePaymentNote(){
+    // placeholder hook if we want to react to payment method changes later
+}
+
+function openUpiModal(){
+
+    let amount = document.getElementById("grand_total").value || "0.00";
+
+    let qrImg = document.getElementById("upiQrImage");
+
+    if(qrImg){
+
+        let upiUrl =
+            "upi://pay?pa=" + encodeURIComponent(UPI_ID) +
+            "&pn=" + encodeURIComponent(SHOP_NAME) +
+            "&am=" + encodeURIComponent(amount) +
+            "&cu=INR";
+
+        qrImg.src =
+            "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
+            encodeURIComponent(upiUrl);
+
+    }
+
+    let amountLabel = document.getElementById("upiModalAmount");
+
+    if(amountLabel){
+
+        amountLabel.innerText = amount;
+
+    }
+
+    document.getElementById("upiModalOverlay").style.display = "flex";
+
+}
+
+function cancelUpiPayment(){
+
+    upiConfirmed = false;
+
+    document.getElementById("upiModalOverlay").style.display = "none";
+
+}
+
+function confirmUpiPayment(){
+
+    upiConfirmed = true;
+
+    document.getElementById("upiModalOverlay").style.display = "none";
+
+    document.getElementById("saleForm").requestSubmit();
+
+}
+
+
+/* ==========================================
+   FORM VALIDATION
+========================================== */
+
+document
+.getElementById("saleForm")
+.addEventListener("submit", function(e){
+
+    if(cart.length === 0){
+
+        alert("Please add at least one product.");
+
+        e.preventDefault();
+
+        return;
+
+    }
+
+    let customer =
+        document.getElementsByName(
+            "customer_name"
+        )[0].value.trim();
+
+    let phone =
+        document.getElementsByName(
+            "customer_phone"
+        )[0].value.trim();
+
+    if(customer === ""){
+
+        alert("Enter Customer Name.");
+
+        e.preventDefault();
+
+        return;
+
+    }
+
+    if(phone === ""){
+
+        alert("Enter Mobile Number.");
+
+        e.preventDefault();
+
+        return;
+
+    }
+
+    if(!/^[0-9]{10}$/.test(phone)){
+
+        alert(
+            "Enter a valid 10-digit Mobile Number."
+        );
+
+        e.preventDefault();
+
+        return;
+
+    }
+
+    let paymentMethod =
+        document.getElementById("paymentMethod").value;
+
+    if(paymentMethod === "UPI" && !upiConfirmed){
+
+        e.preventDefault();
+
+        openUpiModal();
+
+        return;
+
+    }
+
+    // reset the flag so the next sale requires fresh confirmation
+    upiConfirmed = false;
+
+});
+
+</script>
+
+{% endblock %}
+                

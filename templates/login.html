@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jan Seva Pharmacy - Login</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="login-body">
+
+<div class="login-container">
+
+    <!-- LEFT BRANDING PANEL -->
+    <div class="login-left">
+
+        <div class="login-left-shape"></div>
+
+        <div class="login-left-top">
+
+            <!-- Mobile-only compact brand header -->
+            <div class="login-mobile-brand">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div>
+                    <h1>JAN SEVA PHARMACY</h1>
+                    <p>Smart Pharmacy Management</p>
+                </div>
+            </div>
+
+            <!-- Desktop brand block -->
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>JAN SEVA PHARMACY</h1>
+                </div>
+            </div>
+
+            <p class="login-tagline">Smart Pharmacy Management. Better Patient Care.</p>
+
+            <p class="login-supporting">
+                Securely manage medicines, inventory, billing and pharmacy
+                operations from one powerful platform.
+            </p>
+
+        </div>
+
+        <ul class="login-features">
+            <li class="feature-item">
+                <i class="fa-solid fa-barcode"></i>
+                Fast barcode-based billing
+            </li>
+            <li class="feature-item">
+                <i class="fa-solid fa-calendar-xmark"></i>
+                Real-time expiry &amp; stock alerts
+            </li>
+            <li class="feature-item">
+                <i class="fa-solid fa-chart-line"></i>
+                Clear sales &amp; inventory reports
+            </li>
+        </ul>
+
+        <p class="login-left-footer">&copy; 2026 JAN SEVA PHARMACY &nbsp;&middot;&nbsp; Secure Pharmacy Management System</p>
+
+    </div>
+
+    <!-- RIGHT LOGIN PANEL -->
+    <div class="login-right">
+
+        <form action="{{ url_for('login') }}" method="POST" class="login-form" id="loginForm" novalidate>
+
+            <h2>Welcome Back 👋</h2>
+
+            <p class="login-subtitle">
+                Sign in to your pharmacy dashboard
+            </p>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {{ category }}">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Email / Username -->
+            <div class="input-group" id="emailGroup">
+                <label for="emailInput">Email / Username</label>
+                <div class="input-icon-wrap">
+                    <i class="fa-solid fa-user field-icon"></i>
+                    <input
+                        type="text"
+                        name="email"
+                        id="emailInput"
+                        placeholder="Enter your email or username"
+                        autocomplete="username"
+                        required>
+                </div>
+                <span class="field-error">Please enter your username or email.</span>
+            </div>
+
+            <!-- Password -->
+            <div class="input-group" id="passwordGroup">
+                <label for="passwordInput">Password</label>
+                <div class="input-icon-wrap">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input
+                        type="password"
+                        name="password"
+                        id="passwordInput"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required>
+                    <button type="button" class="toggle-eye" onclick="togglePassword('passwordInput', this.querySelector('i'))" aria-label="Show or hide password" tabindex="-1">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+                <span class="field-error">Please enter your password.</span>
+            </div>
+
+            <div class="login-options-row">
+                <label class="remember-me">
+                    <input type="checkbox">
+                    Remember me
+                </label>
+            </div>
+
+            <!-- Login Button -->
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span class="spinner"></span>
+                <span class="btn-label"><i class="fa-solid fa-right-to-bracket"></i> Sign In</span>
+            </button>
+
+            <!-- Demo Accounts -->
+            <div class="demo-login">
+
+                <h4>Demo Accounts</h4>
+
+                <div class="demo-box">
+                    <p><strong>Admin Account</strong></p>
+                    <p>Email : admin@inventory.com</p>
+                    <p>Password : admin123</p>
+                </div>
+
+                <div class="demo-box">
+                    <p><strong>Cashier Account</strong></p>
+                    <p>Email : cashier@inventory.com</p>
+                    <p>Password : cashier123</p>
+                </div>
+
+            </div>
+
+            <p class="login-footer-note">
+                &copy; 2026 JAN SEVA PHARMACY<br>
+                Secure Pharmacy Management System
+            </p>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+(function () {
+    var form = document.getElementById("loginForm");
+    var emailGroup = document.getElementById("emailGroup");
+    var passwordGroup = document.getElementById("passwordGroup");
+    var emailInput = document.getElementById("emailInput");
+    var passwordInput = document.getElementById("passwordInput");
+    var loginBtn = document.getElementById("loginBtn");
+
+    form.addEventListener("submit", function (e) {
+        var valid = true;
+
+        if (!emailInput.value.trim()) {
+            emailGroup.classList.add("has-error");
+            valid = false;
+        } else {
+            emailGroup.classList.remove("has-error");
+        }
+
+        if (!passwordInput.value) {
+            passwordGroup.classList.add("has-error");
+            valid = false;
+        } else {
+            passwordGroup.classList.remove("has-error");
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            return;
+        }
+
+        loginBtn.classList.add("is-loading");
+        loginBtn.disabled = true;
+        loginBtn.querySelector(".btn-label").innerHTML = "Signing in...";
+    });
+
+    [emailInput, passwordInput].forEach(function (input) {
+        input.addEventListener("input", function () {
+            input.closest(".input-group").classList.remove("has-error");
+        });
+    });
+})();
+</script>
+
+</body>
+</html>

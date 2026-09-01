@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Medicine Purchase Details{% endblock %}
+{% block page_title %}Medicine Purchase Details{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        <i class="fa-solid fa-file-medical"></i>
+        Medicine Purchase Details
+    </h2>
+
+    <a href="{{ url_for('purchases') }}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back
+    </a>
+
+</div>
+
+<div class="card">
+
+    <table class="table">
+
+        <tbody>
+
+            <tr>
+                <th width="30%">Purchase ID</th>
+                <td>{{ purchase.id }}</td>
+            </tr>
+
+            <tr>
+                <th>Supplier Name</th>
+                <td>{{ purchase.supplier.name }}</td>
+            </tr>
+
+            <tr>
+                <th>Medicine Name</th>
+                <td>{{ purchase.product.name }}</td>
+            </tr>
+
+            <tr>
+                <th>Manufacturer</th>
+                <td>{{ purchase.product.brand }}</td>
+            </tr>
+
+            <tr>
+                <th>Category</th>
+                <td>{{ purchase.product.category }}</td>
+            </tr>
+
+            <tr>
+                <th>Batch Number</th>
+                <td>{{ purchase.batch.batch_no if purchase.batch else "-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Barcode</th>
+                <td>{{ purchase.batch.barcode if purchase.batch else "-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Expiry Date</th>
+                <td>
+                    {% if purchase.batch and purchase.batch.expiry_date %}
+                        {{ purchase.batch.expiry_date.strftime("%d-%m-%Y") }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Remaining Stock (this batch)</th>
+                <td>{{ purchase.batch.quantity_remaining if purchase.batch else "-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Quantity</th>
+                <td>{{ purchase.quantity }}</td>
+            </tr>
+
+            <tr>
+                <th>Unit Price</th>
+                <td>
+                    ₹ {{ "%.2f"|format(purchase.cost / purchase.quantity) }}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Total Price</th>
+                <td>
+                    <strong>
+                        ₹ {{ "%.2f"|format(purchase.cost) }}
+                    </strong>
+                </td>
+            </tr>
+
+            <tr>
+                <th>Purchase Date</th>
+                <td>
+                    {{ purchase.purchase_date.strftime("%d-%m-%Y %I:%M %p") }}
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div class="form-buttons">
+
+    <a href="{{ url_for('edit_purchase', id=purchase.id) }}"
+       class="btn btn-warning">
+
+        <i class="fa-solid fa-pen"></i>
+        Edit
+
+    </a>
+
+    <a href="{{ url_for('delete_purchase', id=purchase.id) }}"
+       class="btn btn-danger"
+       onclick="return confirmDelete('Delete this purchase record?')">
+
+        <i class="fa-solid fa-trash"></i>
+        Delete
+
+    </a>
+
+    <button onclick="window.print()" class="btn btn-primary">
+
+        <i class="fa-solid fa-print"></i>
+        Print
+
+    </button>
+
+</div>
+
+{% endblock %}

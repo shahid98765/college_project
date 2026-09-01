@@ -1,0 +1,527 @@
+{% extends "base.html" %}
+
+{% block title %}Invoice{% endblock %}
+
+{% block page_title %}Sales Invoice{% endblock %}
+
+
+{% block content %}
+
+<div class="invoice">
+
+
+    <!-- HEADER -->
+
+    <div class="invoice-header">
+
+        <div>
+
+            <h1 class="invoice-title">
+                {{ settings.shop_name or "JAN SEVA PHARMACY" }}
+            </h1>
+
+            <p>
+                Sales Invoice
+            </p>
+
+            <p>
+                Mumbai, Maharashtra
+            </p>
+
+            {% if settings.phone_number %}
+            <p>
+                Phone : {{ settings.phone_number }}
+            </p>
+            {% endif %}
+
+        </div>
+
+
+        <div style="text-align:right;">
+
+            <h3>
+                Invoice #{{ "%05d"|format(sale.id) }}
+            </h3>
+
+            <p>
+                Date :
+                {{ sale.date.strftime('%d-%m-%Y %I:%M %p') }}
+            </p>
+
+            <p>
+                Payment :
+                {{ sale.payment_method }}
+            </p>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+
+
+    <!-- CUSTOMER DETAILS -->
+
+    <div class="invoice-details">
+
+        <h3>
+            Customer Details
+        </h3>
+
+
+        {% if customer %}
+
+
+        <p>
+
+            <strong>Name :</strong>
+
+            {{ customer.name }}
+
+        </p>
+
+
+        <p>
+
+            <strong>Mobile :</strong>
+
+            {{ customer.phone }}
+
+        </p>
+
+
+        {% if customer.email %}
+
+        <p>
+
+            <strong>Email :</strong>
+
+            {{ customer.email }}
+
+        </p>
+
+        {% endif %}
+
+
+        {% else %}
+
+
+        <p>
+            Walk-in Customer
+        </p>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+
+
+    <!-- PRODUCT TABLE -->
+
+
+    <table class="table">
+
+
+        <thead>
+
+
+            <tr>
+
+                <th>
+                    #
+                </th>
+
+
+                <th>
+                    Product
+                </th>
+
+
+                <th>
+                    Quantity
+                </th>
+
+
+                <th>
+                    Price
+                </th>
+
+
+                <th>
+                    Total
+                </th>
+
+
+            </tr>
+
+
+        </thead>
+
+
+
+        <tbody>
+
+
+
+        {% for item in items %}
+
+
+        <tr>
+
+
+            <td>
+
+                {{ loop.index }}
+
+            </td>
+
+
+            <td>
+
+                {{ item.product.name if item.product else "Unknown Medicine" }}
+
+                {% if item.batch %}
+                <br><small>Batch: {{ item.batch.batch_no or "-" }}</small>
+                {% endif %}
+
+            </td>
+
+
+            <td>
+
+                {{ item.quantity }}
+
+            </td>
+
+
+            <td>
+
+                ₹ {{ "%.2f"|format(item.price) }}
+
+            </td>
+
+
+            <td>
+
+                ₹ {{ "%.2f"|format(item.quantity * item.price) }}
+
+            </td>
+
+
+        </tr>
+
+
+
+        {% endfor %}
+
+
+
+        </tbody>
+
+
+    </table>
+
+
+
+
+    <br>
+
+
+    <p>
+
+        <strong>
+            Total Products :
+        </strong>
+
+        {{ items|length }}
+
+    </p>
+
+
+
+
+    <!-- TOTAL SECTION -->
+
+
+    <div class="invoice-total">
+
+
+        <table style="width:350px;float:right;">
+
+
+
+            <tr>
+
+
+                <td>
+
+                    <strong>
+                        Subtotal
+                    </strong>
+
+                </td>
+
+
+                <td style="text-align:right;">
+
+                    ₹ {{ "%.2f"|format(sale.subtotal) }}
+
+                </td>
+
+
+            </tr>
+
+
+
+
+
+            <tr>
+
+
+                <td>
+
+                    <strong>
+                        Discount
+                    </strong>
+
+                </td>
+
+
+                <td style="text-align:right;">
+
+                    - ₹ {{ "%.2f"|format(sale.discount) }}
+
+                </td>
+
+
+            </tr>
+
+
+
+
+
+            <tr>
+
+
+                <td>
+
+                    <strong>
+                        GST
+                    </strong>
+
+                </td>
+
+
+                <td style="text-align:right;">
+
+                    + ₹ {{ "%.2f"|format(sale.tax) }}
+
+                </td>
+
+
+            </tr>
+
+
+
+
+
+            <tr style="font-size:18px;">
+
+
+                <td>
+
+                    <strong>
+                        Grand Total
+                    </strong>
+
+                </td>
+
+
+                <td style="text-align:right;">
+
+
+                    <strong>
+
+                        ₹ {{ "%.2f"|format(sale.total) }}
+
+                    </strong>
+
+
+                </td>
+
+
+            </tr>
+
+
+
+        </table>
+
+
+
+        <div style="clear:both;"></div>
+
+
+    </div>
+
+
+
+
+    <br><br>
+
+
+
+
+    <!-- SIGNATURE -->
+
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        margin-top:50px;
+    ">
+
+
+        <div>
+
+            Customer Signature
+
+            <br><br>
+
+            ___________________
+
+        </div>
+
+
+
+        <div>
+
+            Authorized Signature
+
+            <br><br>
+
+            ___________________
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <br><br>
+
+
+
+
+    <!-- FOOTER -->
+
+
+    <div style="text-align:center;">
+
+        <h3>
+            {{ settings.thank_you_message or "Thank You For Your Purchase! We appreciate your business. Visit Again." }}
+        </h3>
+
+    </div>
+
+
+
+
+
+    <br>
+
+
+
+
+    <!-- BUTTONS -->
+
+
+    <div style="
+        display:flex;
+        justify-content:center;
+        gap:15px;
+    ">
+
+
+        <button
+            class="btn btn-primary"
+            onclick="window.print()">
+
+
+            <i class="fa fa-print"></i>
+
+            Print Invoice
+
+
+        </button>
+
+
+
+
+
+        <a
+            href="{{ url_for('pos') }}"
+            class="btn btn-success">
+
+
+            <i class="fa fa-cart-shopping"></i>
+
+            New Sale
+
+
+        </a>
+
+
+
+
+
+        <a
+            href="{{ url_for('sales_history') }}"
+            class="btn btn-secondary">
+
+
+            <i class="fa fa-clock-rotate-left"></i>
+
+            Sales History
+
+
+        </a>
+
+        {% if customer and customer.phone %}
+
+        {% set wa_message =
+            'Hi ' ~ (customer.name or 'there') ~ ',\n\n' ~
+            (settings.thank_you_message or 'Thank You For Your Purchase! We appreciate your business. Visit Again.') ~
+            '\n\nInvoice #' ~ ('%05d'|format(sale.id)) ~
+            '\nAmount Paid : Rs. ' ~ ('%.2f'|format(sale.total)) ~
+            '\n- ' ~ (settings.shop_name or 'Jan Seva Pharmacy')
+        %}
+
+        <a
+            href="https://wa.me/91{{ customer.phone }}?text={{ wa_message | urlencode }}"
+            target="_blank"
+            class="btn btn-success">
+
+            <i class="fa-brands fa-whatsapp"></i>
+
+            Send Thank You on WhatsApp
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+
+
+
+</div>
+
+
+{% endblock %}

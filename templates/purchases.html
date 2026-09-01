@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Medicine Purchases{% endblock %}
+{% block page_title %}Medicine Purchase Management{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        <i class="fa-solid fa-truck-medical"></i>
+        Medicine Purchase Management
+    </h2>
+
+    <a href="{{ url_for('add_purchase') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
+        Add Medicine Purchase
+    </a>
+
+</div>
+
+<div class="search-box">
+
+    <form action="{{ url_for('purchases') }}" method="GET">
+
+        <input
+            type="text"
+            name="q"
+            placeholder="Search Medicine Name..."
+            value="{{ search if search else '' }}">
+
+        <button type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+
+    </form>
+
+</div>
+
+<div class="table-container">
+
+<table class="table">
+
+    <thead>
+
+        <tr>
+
+            <th>ID</th>
+            <th>Supplier</th>
+            <th>Medicine</th>
+            <th>Batch No.</th>
+            <th>Expiry Date</th>
+            <th>Status</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total Price</th>
+            <th>Purchase Date</th>
+            <th>Action</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% if purchases %}
+
+        {% for purchase in purchases %}
+
+        <tr>
+
+            <td>{{ purchase.id }}</td>
+
+            <td>{{ purchase.supplier.name }}</td>
+
+            <td>{{ purchase.product.name }}</td>
+
+            <td>{{ purchase.batch.batch_no if purchase.batch else "-" }}</td>
+
+            <td>
+
+                {% if purchase.batch and purchase.batch.expiry_date %}
+
+                    {{ purchase.batch.expiry_date.strftime("%d-%m-%Y") }}
+
+                {% else %}
+
+                    -
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {% if purchase.batch and purchase.batch.expiry_date %}
+
+                    {% if purchase.batch.expiry_date < today %}
+
+                        <span class="badge badge-danger">
+                            Expired
+                        </span>
+
+                    {% elif purchase.batch.expiry_date <= warning_date %}
+
+                        <span class="badge badge-warning">
+                            Expiring Soon
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge badge-success">
+                            Safe
+                        </span>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <span class="badge badge-info">
+                        No Expiry
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+            <td>{{ purchase.quantity }}</td>
+
+            <td>
+                ₹ {{ "%.2f"|format(purchase.cost / purchase.quantity) }}
+            </td>
+
+            <td>
+                ₹ {{ "%.2f"|format(purchase.cost) }}
+            </td>
+
+            <td>
+                {{ purchase.purchase_date.strftime("%d-%m-%Y") }}
+            </td>
+
+            <td>
+
+                <a href="{{ url_for('purchase_details', id=purchase.id) }}"
+                   class="btn btn-info"
+                   title="View">
+
+                    <i class="fa-solid fa-eye"></i>
+
+                </a>
+
+                <a href="{{ url_for('edit_purchase', id=purchase.id) }}"
+                   class="btn btn-warning"
+                   title="Edit">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </a>
+
+                <a href="{{ url_for('delete_purchase', id=purchase.id) }}"
+                   class="btn btn-danger"
+                   onclick="return confirmDelete('Delete this purchase?')"
+                   title="Delete">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <tr>
+
+            <td colspan="11" style="text-align:center;">
+
+                No Medicine Purchase Records Found
+
+            </td>
+
+        </tr>
+
+    {% endif %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

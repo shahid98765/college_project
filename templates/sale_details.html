@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Sale Details{% endblock %}
+{% block page_title %}Sale Details{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        <i class="fa-solid fa-receipt"></i>
+        Sale Details - INV-{{ "%05d"|format(sale.id) }}
+    </h2>
+
+    <a href="{{ url_for('sales_history') }}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back
+    </a>
+
+</div>
+
+<div class="card">
+
+    <table class="table">
+
+        <tbody>
+
+            <tr>
+                <th width="30%">Invoice No.</th>
+                <td>INV-{{ "%05d"|format(sale.id) }}</td>
+            </tr>
+
+            <tr>
+                <th>Customer</th>
+                <td>{{ customer.name if customer else "Walk-in Customer" }}</td>
+            </tr>
+
+            <tr>
+                <th>Phone</th>
+                <td>{{ customer.phone if customer else "-" }}</td>
+            </tr>
+
+            <tr>
+                <th>Date</th>
+                <td>{{ sale.date.strftime("%d-%m-%Y %I:%M %p") }}</td>
+            </tr>
+
+            <tr>
+                <th>Payment Method</th>
+                <td>{{ sale.payment_method }}</td>
+            </tr>
+
+            <tr>
+                <th>Total Items</th>
+                <td>{{ total_items }}</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<br>
+
+<div class="card">
+
+    <h3><i class="fa-solid fa-cart-shopping"></i> Items Sold</h3>
+
+    <table class="table">
+
+        <thead>
+            <tr>
+                <th>Medicine</th>
+                <th>Batch No.</th>
+                <th>Barcode</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product.name if item.product else "Unknown Medicine" }}</td>
+                <td>{{ item.batch.batch_no if item.batch else "-" }}</td>
+                <td>{{ item.batch.barcode if item.batch else "-" }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹ {{ "%.2f"|format(item.price) }}</td>
+                <td>₹ {{ "%.2f"|format(item.price * item.quantity) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align:center;">No items found.</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div class="form-buttons">
+
+    <a href="{{ url_for('invoice', sale_id=sale.id) }}" class="btn btn-primary">
+        <i class="fa-solid fa-file-invoice"></i>
+        View Invoice
+    </a>
+
+    <button onclick="window.print()" class="btn btn-secondary">
+        <i class="fa-solid fa-print"></i>
+        Print
+    </button>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Suppliers{% endblock %}
+
+{% block page_title %}Suppliers Management{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+
+        <i class="fa-solid fa-truck"></i>
+
+        Suppliers
+
+    </h2>
+
+    <div>
+
+        <button
+            class="btn btn-secondary"
+            onclick="window.print()">
+
+            <i class="fa-solid fa-print"></i>
+
+            Print
+
+        </button>
+
+        <a href="{{ url_for('add_supplier') }}"
+           class="btn btn-primary">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Add Supplier
+
+        </a>
+
+    </div>
+
+</div>
+
+
+
+<div class="card">
+
+    <strong>
+
+        Total Suppliers :
+
+    </strong>
+
+    {{ suppliers|length }}
+
+</div>
+
+<br>
+
+
+
+<div class="search-box">
+
+    <input
+        type="text"
+        id="searchSupplier"
+        placeholder="Search by Name, Phone, Email or Address..."
+        onkeyup="searchTable()">
+
+</div>
+
+<br>
+
+
+
+<div class="table-container">
+
+<table class="table" id="supplierTable">
+
+    <thead>
+
+        <tr>
+
+            <th>ID</th>
+
+            <th>Supplier Name</th>
+
+            <th>Phone</th>
+
+            <th>Email</th>
+
+            <th>Address</th>
+
+            <th width="180">
+
+                Actions
+
+            </th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    {% if suppliers %}
+
+        {% for supplier in suppliers %}
+
+        <tr>
+
+            <td>
+
+                SUP-{{ "%04d"|format(supplier.id) }}
+
+            </td>
+
+            <td>
+
+                {{ supplier.name }}
+
+            </td>
+
+            <td>
+
+                {{ supplier.phone or "-" }}
+
+            </td>
+
+            <td>
+
+                {{ supplier.email or "-" }}
+
+            </td>
+
+            <td>
+
+                {{ supplier.address or "-" }}
+
+            </td>
+
+            <td>
+
+                <a href="{{ url_for('supplier_details', id=supplier.id) }}"
+                   class="btn btn-info"
+                   title="View Details">
+
+                    <i class="fa-solid fa-eye"></i>
+
+                </a>
+
+                <a href="{{ url_for('edit_supplier', id=supplier.id) }}"
+                   class="btn btn-warning"
+                   title="Edit Supplier">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                </a>
+
+                <a href="{{ url_for('delete_supplier', id=supplier.id) }}"
+                   class="btn btn-danger"
+                   title="Delete Supplier"
+                   onclick="return confirmDelete('Delete this supplier?')">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <tr>
+
+            <td colspan="6" style="text-align:center;">
+
+                <i class="fa-solid fa-truck fa-2x"></i>
+
+                <br><br>
+
+                No Suppliers Found
+
+            </td>
+
+        </tr>
+
+    {% endif %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+
+
+<script>
+
+function searchTable(){
+
+    let input = document.getElementById("searchSupplier").value.toUpperCase();
+
+    let rows = document.querySelectorAll("#supplierTable tbody tr");
+
+    rows.forEach(function(row){
+
+        let text = row.innerText.toUpperCase();
+
+        if(text.indexOf(input) > -1){
+
+            row.style.display = "";
+
+        }
+
+        else{
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+}
+
+</script>
+
+{% endblock %}

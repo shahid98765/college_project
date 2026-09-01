@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Shop Settings{% endblock %}
+
+{% block page_title %}Shop Settings{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        <i class="fa-solid fa-gear"></i>
+        Shop Settings
+    </h2>
+
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back
+    </a>
+
+</div>
+
+<div class="form-container">
+
+    <div class="form-card">
+
+        <form method="POST" action="{{ url_for('settings') }}">
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        <i class="fa-solid fa-store"></i>
+                        Shop Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="shop_name"
+                        value="{{ settings.shop_name or '' }}"
+                        placeholder="Enter Shop Name"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        <i class="fa-solid fa-phone"></i>
+                        Contact Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        name="phone_number"
+                        value="{{ settings.phone_number or '' }}"
+                        placeholder="Enter Contact Number (e.g. +91 9876543210)">
+
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        <i class="fa-solid fa-qrcode"></i>
+                        UPI ID
+                    </label>
+
+                    <input
+                        type="text"
+                        name="upi_id"
+                        value="{{ settings.upi_id or '' }}"
+                        placeholder="e.g. janseva@okhdfcbank">
+
+                    <small>
+                        Used to generate the UPI QR code shown on invoices
+                        when a customer pays by UPI.
+                    </small>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        <i class="fa-solid fa-comment-dots"></i>
+                        Thank You Message
+                    </label>
+
+                    <textarea
+                        name="thank_you_message"
+                        rows="4"
+                        placeholder="Message shown to customers on their invoice after a sale">{{ settings.thank_you_message or '' }}</textarea>
+
+                </div>
+
+            </div>
+
+            <div class="form-buttons">
+
+                <button
+                    type="submit"
+                    class="btn btn-success">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Settings
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}Daily Sales Report{% endblock %}
+
+{% block page_title %}Daily Sales Report{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        <i class="fa-solid fa-calendar-day"></i>
+        Daily Sales Report
+    </h2>
+
+    <button class="btn btn-primary" onclick="window.print()">
+        <i class="fa-solid fa-print"></i>
+        Print Report
+    </button>
+
+</div>
+
+
+<!-- Summary Cards -->
+
+<div class="dashboard-cards">
+
+    <div class="card blue">
+
+        <i class="fa-solid fa-file-invoice"></i>
+
+        <div>
+
+            <h3>{{ sales|length }}</h3>
+
+            <p>Total Bills Today</p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card green">
+
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+
+        <div>
+
+            <h3>₹ {{ "%.2f"|format(total_sales) }}</h3>
+
+            <p>Today's Revenue</p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<br>
+
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <h3>
+
+            <i class="fa-solid fa-receipt"></i>
+
+            Today's Sales
+
+        </h3>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Invoice</th>
+                    <th>Customer</th>
+                    <th>Medicines</th>
+                    <th>Items</th>
+                    <th>Payment</th>
+                    <th>Total</th>
+                    <th>Date & Time</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% if sales %}
+
+                {% for sale in sales %}
+
+                <tr>
+
+                    <td>
+                        INV-{{ "%04d"|format(sale.id) }}
+                    </td>
+
+                    <td>
+
+                        {% if sale.customer %}
+
+                            {{ sale.customer.name }}
+
+                        {% else %}
+
+                            Walk-in Customer
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% for item in sale.items %}
+
+                            {{ item.product.name if item.product else "Unknown Medicine" }}{% if not loop.last %}, {% endif %}
+
+                        {% endfor %}
+
+                    </td>
+
+                    <td>
+
+                        {% set ns = namespace(qty=0) %}
+
+                        {% for item in sale.items %}
+                            {% set ns.qty = ns.qty + item.quantity %}
+                        {% endfor %}
+
+                        {{ ns.qty }}
+
+                    </td>
+
+                    <td>
+
+                        {{ sale.payment_method }}
+
+                    </td>
+
+                    <td>
+
+                        <strong>
+
+                            ₹ {{ "%.2f"|format(sale.total) }}
+
+                        </strong>
+
+                    </td>
+
+                    <td>
+
+                        {{ sale.date.strftime("%d-%m-%Y %I:%M %p") }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="7" style="text-align:center;">
+
+                        <i class="fa-solid fa-circle-info fa-2x"></i>
+
+                        <br><br>
+
+                        No Sales Recorded Today
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<br>
+
+
+<div class="dashboard-section">
+
+    <table style="width:350px; margin-left:auto;" class="table">
+
+        <tr>
+
+            <td>
+
+                <strong>Total Revenue</strong>
+
+            </td>
+
+            <td style="text-align:right;">
+
+                <strong>
+
+                    ₹ {{ "%.2f"|format(total_sales) }}
+
+                </strong>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+{% endblock %}

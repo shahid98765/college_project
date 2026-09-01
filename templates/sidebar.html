@@ -1,0 +1,114 @@
+<!-- ==========================
+     SIDEBAR
+========================== -->
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<div class="sidebar" id="sidebar">
+
+    <div class="sidebar-header">
+
+        <i class="fa-solid fa-heart-pulse logo-icon"></i>
+
+        <h2>Jan Seva Pharmacy</h2>
+
+        <p>Inventory & POS</p>
+
+    </div>
+
+    <ul class="menu">
+
+        <li class="menu-group-label">Dashboard</li>
+
+        <li class="{{ 'active' if request.endpoint == 'dashboard' }}">
+            <a href="{{ url_for('dashboard') }}">
+                <i class="fa-solid fa-gauge-high"></i>
+                Overview
+            </a>
+        </li>
+
+        <li class="{{ 'active' if request.endpoint == 'expiry_alerts' }}">
+            <a href="{{ url_for('expiry_alerts') }}">
+                <i class="fa-solid fa-calendar-xmark"></i>
+                Expiry Alerts
+            </a>
+        </li>
+
+        <li class="menu-group-label">Sales</li>
+
+        <li class="{{ 'active' if request.endpoint == 'pos' }}">
+            <a href="{{ url_for('pos') }}">
+                <i class="fa-solid fa-cash-register"></i>
+                New Sale / POS
+            </a>
+        </li>
+
+        <li class="{{ 'active' if request.endpoint in ['sales_history', 'sale_details'] }}">
+            <a href="{{ url_for('sales_history') }}">
+                <i class="fa-solid fa-receipt"></i>
+                Sales History
+            </a>
+        </li>
+
+        <li class="menu-group-label">Inventory</li>
+
+        <li class="{{ 'active' if request.endpoint in ['product_list', 'add_product', 'edit_product'] }}">
+            <a href="{{ url_for('product_list') }}">
+                <i class="fa-solid fa-pills"></i>
+                Medicines
+            </a>
+        </li>
+
+        <li class="menu-group-label">Purchasing</li>
+
+        <li class="{{ 'active' if request.endpoint in ['purchases', 'add_purchase', 'edit_purchase', 'purchase_details'] }}">
+            <a href="{{ url_for('purchases') }}">
+                <i class="fa-solid fa-truck-medical"></i>
+                Purchases
+            </a>
+        </li>
+
+        <li class="{{ 'active' if request.endpoint in ['suppliers', 'add_supplier', 'edit_supplier', 'supplier_details'] }}">
+            <a href="{{ url_for('suppliers') }}">
+                <i class="fa-solid fa-truck"></i>
+                Suppliers
+            </a>
+        </li>
+
+        <li class="menu-group-label">Patients</li>
+
+        <li class="{{ 'active' if request.endpoint in ['customers', 'add_customer', 'edit_customer', 'customer_details'] }}">
+            <a href="{{ url_for('customers') }}">
+                <i class="fa-solid fa-user-injured"></i>
+                Patients
+            </a>
+        </li>
+
+        <li class="menu-group-label">Reports</li>
+
+        <li class="{{ 'active' if request.endpoint in ['reports', 'daily_report', 'low_stock_report', 'expiry_report'] }}">
+            <a href="{{ url_for('reports') }}">
+                <i class="fa-solid fa-chart-line"></i>
+                Reports
+            </a>
+        </li>
+
+        <li class="menu-group-label">Settings</li>
+
+        <li class="{{ 'active' if request.endpoint == 'settings' }}">
+            <a href="{{ url_for('settings') }}">
+                <i class="fa-solid fa-gear"></i>
+                Settings
+            </a>
+        </li>
+
+        <li class="logout-item">
+            <a href="{{ url_for('logout') }}">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+        </li>
+
+    </ul>
+
+</div>

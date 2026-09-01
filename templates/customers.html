@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}Customers{% endblock %}
+
+{% block page_title %}Customer Management{% endblock %}
+
+
+
+{% block content %}
+
+
+
+<div class="page-header">
+
+
+    <h2>
+
+        <i class="fa-solid fa-users"></i>
+
+        Customers
+
+    </h2>
+
+
+
+
+
+    <a href="{{ url_for('add_customer') }}"
+
+       class="btn btn-primary">
+
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        Add Customer
+
+
+    </a>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- Search -->
+
+<div class="search-box">
+
+
+<input type="text"
+
+       id="searchCustomer"
+
+       placeholder="Search Customer..."
+
+       onkeyup="searchCustomer()">
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="table-container">
+
+
+
+<table class="table"
+
+       id="customerTable">
+
+
+
+
+
+<thead>
+
+
+<tr>
+
+
+<th>ID</th>
+
+<th>Customer Name</th>
+
+<th>Phone</th>
+
+<th>Email</th>
+
+<th>Total Orders</th>
+
+<th>Action</th>
+
+
+
+</tr>
+
+
+
+</thead>
+
+
+
+
+
+
+
+
+
+<tbody>
+
+
+
+
+
+{% if customers %}
+
+
+
+
+
+{% for customer in customers %}
+
+
+
+
+<tr>
+
+
+
+
+
+<td>
+
+{{ customer.id }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ customer.name }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ customer.phone }}
+
+</td>
+
+
+
+
+
+<td>
+
+{{ customer.email or "-" }}
+
+</td>
+
+
+
+
+
+
+
+<td>
+
+
+{{ customer.sales|length }}
+
+
+</td>
+
+
+
+
+
+
+
+<td>
+
+
+
+
+
+<a href="{{ url_for(
+'customer_details',
+id=customer.id
+) }}"
+
+class="btn btn-info"
+
+title="View">
+
+
+<i class="fa-solid fa-eye"></i>
+
+
+</a>
+
+
+
+
+
+
+
+
+<a href="{{ url_for(
+'edit_customer',
+id=customer.id
+) }}"
+
+class="btn btn-warning"
+
+title="Edit">
+
+
+<i class="fa-solid fa-pen"></i>
+
+
+</a>
+
+
+
+
+
+
+
+
+<a href="{{ url_for(
+'delete_customer',
+id=customer.id
+) }}"
+
+class="btn btn-danger"
+
+onclick="return confirm(
+'Delete this customer?'
+)"
+
+title="Delete">
+
+
+<i class="fa-solid fa-trash"></i>
+
+
+</a>
+
+
+
+
+
+</td>
+
+
+
+
+
+</tr>
+
+
+
+
+
+
+{% endfor %}
+
+
+
+
+
+{% else %}
+
+
+
+
+
+<tr>
+
+
+<td colspan="6"
+
+style="text-align:center;">
+
+
+
+<i class="fa-solid fa-user-slash fa-2x"></i>
+
+
+<br><br>
+
+
+No Customers Found
+
+
+
+</td>
+
+
+</tr>
+
+
+
+
+
+{% endif %}
+
+
+
+
+
+</tbody>
+
+
+
+
+
+
+</table>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<script>
+
+
+function searchCustomer(){
+
+
+
+let input =
+document.getElementById(
+"searchCustomer"
+);
+
+
+
+let filter =
+input.value.toUpperCase();
+
+
+
+let table =
+document.getElementById(
+"customerTable"
+);
+
+
+
+let rows =
+table.getElementsByTagName(
+"tr"
+);
+
+
+
+
+for(let i=1;i<rows.length;i++){
+
+
+
+let text =
+rows[i].innerText.toUpperCase();
+
+
+
+if(text.indexOf(filter)>-1){
+
+
+rows[i].style.display="";
+
+
+}
+
+else{
+
+
+rows[i].style.display="none";
+
+
+}
+
+
+
+}
+
+
+
+}
+
+
+
+</script>
+
+
+
+
+
+{% endblock %}

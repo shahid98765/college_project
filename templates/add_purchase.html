@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}Add Medicine Purchase{% endblock %}
+{% block page_title %}Add Medicine Purchase{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        <i class="fa-solid fa-truck-medical"></i>
+        Add Medicine Purchase
+    </h2>
+
+    <a href="{{ url_for('purchases') }}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back
+    </a>
+
+</div>
+
+<div class="card">
+
+    <form action="{{ url_for('add_purchase') }}" method="POST">
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Supplier Name</label>
+
+                <input
+                    type="text"
+                    name="supplier_name"
+                    placeholder="Enter Supplier Name"
+                    required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Medicine Name</label>
+
+                <input
+                    type="text"
+                    id="product_name"
+                    name="product_name"
+                    list="medicineOptions"
+                    autocomplete="off"
+                    placeholder="Type or pick a medicine"
+                    oninput="autofillMedicine()"
+                    required>
+
+                <datalist id="medicineOptions">
+                    {% for m in medicines %}
+                    <option value="{{ m.name }}"></option>
+                    {% endfor %}
+                </datalist>
+
+                <small id="medicineHint" class="form-hint"></small>
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Manufacturer</label>
+
+                <input
+                    type="text"
+                    id="brand"
+                    name="brand"
+                    placeholder="Enter Manufacturer"
+                    required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Category</label>
+
+                <select id="category" name="category" required>
+
+                    <option value="">Select Category</option>
+
+                    <option>Tablet</option>
+                    <option>Capsule</option>
+                    <option>Syrup</option>
+                    <option>Injection</option>
+                    <option>Cream</option>
+                    <option>Ointment</option>
+                    <option>Drops</option>
+                    <option>Inhaler</option>
+                    <option>Powder</option>
+                    <option>Gel</option>
+                    <option>Medical Device</option>
+                    <option>First Aid</option>
+                    <option>Surgical Item</option>
+                    <option>Health Supplement</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Batch Number</label>
+
+                <input
+                    type="text"
+                    name="batch_no"
+                    placeholder="Enter Batch Number"
+                    required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Barcode (leave blank to auto-generate)</label>
+
+                <input
+                    type="text"
+                    id="purchaseBarcodeInput"
+                    name="barcode"
+                    placeholder="Scan or enter barcode"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    onkeydown="if(event.key === 'Enter'){ event.preventDefault(); }">
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Manufacturing Date</label>
+
+                <input
+                    type="date"
+                    name="manufacture_date">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Expiry Date</label>
+
+                <input
+                    type="date"
+                    name="expiry_date"
+                    required>
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Quantity</label>
+
+                <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    min="1"
+                    required
+                    oninput="calculateTotal()">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Purchase Price / Unit (₹)</label>
+
+                <input
+                    type="number"
+                    id="unit_price"
+                    name="unit_price"
+                    step="0.01"
+                    min="0"
+                    required
+                    oninput="calculateTotal()">
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Selling Price / Unit (₹)</label>
+
+                <input
+                    type="number"
+                    name="selling_price"
+                    step="0.01"
+                    min="0"
+                    placeholder="Defaults to medicine MRP if left blank">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>GST %</label>
+
+                <input
+                    type="number"
+                    name="gst_percent"
+                    step="0.01"
+                    min="0"
+                    placeholder="0">
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Invoice Number</label>
+
+                <input
+                    type="text"
+                    name="invoice_no"
+                    placeholder="Supplier invoice number">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Storage Location (optional)</label>
+
+                <input
+                    type="text"
+                    name="location"
+                    placeholder="e.g. Rack A-3">
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Total Price (₹)</label>
+
+                <input
+                    type="text"
+                    id="total_price"
+                    readonly>
+
+            </div>
+
+        </div>
+
+        <div class="form-buttons">
+
+            <button type="submit" class="btn btn-success">
+
+                <i class="fa-solid fa-floppy-disk"></i>
+
+                Save Purchase
+
+            </button>
+
+            <a href="{{ url_for('purchases') }}" class="btn btn-danger">
+
+                Cancel
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+
+// Existing medicines, keyed by lowercase name, for auto-fill when the
+// typed/picked Medicine Name matches something already in inventory.
+const medicineLookup = {
+    {% for m in medicines %}
+    {{ m.name|lower|tojson }}: {
+        brand: {{ (m.brand or "")|tojson }},
+        category: {{ (m.category or "")|tojson }},
+        price: {{ m.price if m.price is not none else 0 }}
+    },
+    {% endfor %}
+};
+
+function autofillMedicine(){
+
+    const nameField = document.getElementById("product_name");
+    const brandField = document.getElementById("brand");
+    const categoryField = document.getElementById("category");
+    const sellingPriceField = document.querySelector('input[name="selling_price"]');
+    const hint = document.getElementById("medicineHint");
+
+    const match = medicineLookup[nameField.value.trim().toLowerCase()];
+
+    if (match) {
+
+        brandField.value = match.brand;
+        categoryField.value = match.category;
+
+        if (sellingPriceField && !sellingPriceField.value && match.price) {
+            sellingPriceField.value = match.price;
+        }
+
+        hint.textContent = "Existing medicine — details auto-filled from inventory.";
+
+    } else if (nameField.value.trim()) {
+
+        hint.textContent = "New medicine — it will be added to inventory with these details.";
+
+    } else {
+
+        hint.textContent = "";
+
+    }
+}
+
+function calculateTotal(){
+
+    let quantity =
+        parseFloat(document.getElementById("quantity").value) || 0;
+
+    let unitPrice =
+        parseFloat(document.getElementById("unit_price").value) || 0;
+
+    document.getElementById("total_price").value =
+        (quantity * unitPrice).toFixed(2);
+
+}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Medicine Supplier{% endblock %}
+
+{% block page_title %}Edit Medicine Supplier{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        <i class="fa-solid fa-truck-medical"></i>
+        Edit Medicine Supplier
+    </h2>
+
+    <a href="{{ url_for('suppliers') }}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back
+    </a>
+
+</div>
+
+<div class="form-container">
+
+    <div class="form-card">
+
+        <form method="POST">
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        <i class="fa-solid fa-building"></i>
+                        Supplier / Company Name
+                    </label>
+
+                    <input
+                        type="text"
+                        name="name"
+                        value="{{ supplier.name }}"
+                        placeholder="Enter Supplier or Pharmaceutical Company Name"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        <i class="fa-solid fa-phone"></i>
+                        Contact Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        name="phone"
+                        value="{{ supplier.phone }}"
+                        placeholder="Enter Contact Number"
+                        required>
+
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        <i class="fa-solid fa-envelope"></i>
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ supplier.email }}"
+                        placeholder="Enter Email Address">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        <i class="fa-solid fa-location-dot"></i>
+                        Company Address
+                    </label>
+
+                    <textarea
+                        name="address"
+                        rows="5"
+                        placeholder="Enter Company Address"
+                        required>{{ supplier.address }}</textarea>
+
+                </div>
+
+            </div>
+
+            <div class="form-buttons">
+
+                <button
+                    type="submit"
+                    class="btn btn-success">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Update Supplier
+
+                </button>
+
+                <button
+                    type="reset"
+                    class="btn btn-warning">
+
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Reset
+
+                </button>
+
+                <a
+                    href="{{ url_for('suppliers') }}"
+                    class="btn btn-danger">
+
+                    <i class="fa-solid fa-times"></i>
+                    Cancel
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Medicine Purchase{% endblock %}
+{% block page_title %}Edit Medicine Purchase{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+        <i class="fa-solid fa-truck-medical"></i>
+        Edit Medicine Purchase
+    </h2>
+
+    <a href="{{ url_for('purchases') }}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back
+    </a>
+
+</div>
+
+<div class="card">
+
+    <form action="{{ url_for('edit_purchase', id=purchase.id) }}" method="POST">
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Supplier Name</label>
+
+                <input
+                    type="text"
+                    name="supplier_name"
+                    value="{{ purchase.supplier.name }}"
+                    required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Medicine Name</label>
+
+                <select name="product_id" required>
+
+                    {% for product in products %}
+
+                    <option value="{{ product.id }}"
+                    {% if product.id == purchase.product_id %}selected{% endif %}>
+
+                        {{ product.name }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Batch Number</label>
+
+                <input
+                    type="text"
+                    name="batch_no"
+                    value="{{ purchase.batch.batch_no if purchase.batch else '' }}"
+                    required>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Expiry Date</label>
+
+                <input
+                    type="date"
+                    name="expiry_date"
+                    value="{{ purchase.batch.expiry_date.strftime('%Y-%m-%d') if purchase.batch and purchase.batch.expiry_date else '' }}"
+                    required>
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Quantity</label>
+
+                <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    min="1"
+                    value="{{ purchase.quantity }}"
+                    required
+                    oninput="calculateTotal()">
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Unit Price (₹)</label>
+
+                <input
+                    type="number"
+                    id="unit_price"
+                    name="unit_price"
+                    step="0.01"
+                    min="0"
+                    value="{{ '%.2f'|format(purchase.cost / purchase.quantity) }}"
+                    required
+                    oninput="calculateTotal()">
+
+            </div>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>Total Price (₹)</label>
+
+                <input
+                    type="text"
+                    id="total_price"
+                    value="{{ '%.2f'|format(purchase.cost) }}"
+                    readonly>
+
+            </div>
+
+        </div>
+
+        <div class="form-buttons">
+
+            <button type="submit" class="btn btn-success">
+
+                <i class="fa-solid fa-floppy-disk"></i>
+
+                Update Purchase
+
+            </button>
+
+            <a href="{{ url_for('purchases') }}" class="btn btn-danger">
+
+                Cancel
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+
+function calculateTotal(){
+
+    let quantity = parseFloat(document.getElementById("quantity").value) || 0;
+
+    let unitPrice = parseFloat(document.getElementById("unit_price").value) || 0;
+
+    document.getElementById("total_price").value =
+        (quantity * unitPrice).toFixed(2);
+
+}
+
+window.onload = calculateTotal;
+
+</script>
+
+{% endblock %}

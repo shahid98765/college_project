@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Low Stock Report{% endblock %}
+
+{% block page_title %}
+Low Stock Report
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h2>
+
+        <i class="fa-solid fa-triangle-exclamation"></i>
+
+        Low Stock Medicines Report
+
+    </h2>
+
+    <button
+        class="btn btn-primary"
+        onclick="window.print()">
+
+        <i class="fa-solid fa-print"></i>
+
+        Print Report
+
+    </button>
+
+</div>
+
+
+<!-- Summary Cards -->
+
+<div class="dashboard-cards">
+
+    <div class="card red">
+
+        <i class="fa-solid fa-capsules"></i>
+
+        <div>
+
+            <h3>
+
+                {{ medicines|length }}
+
+            </h3>
+
+            <p>
+
+                Low Stock Medicines
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<br>
+
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <h3>
+
+            <i class="fa-solid fa-warehouse"></i>
+
+            Medicines Requiring Restock
+
+        </h3>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Medicine</th>
+
+                    <th>Category</th>
+
+                    <th>Company</th>
+
+                    <th>Batch No</th>
+
+                    <th>Expiry Date</th>
+
+                    <th>Selling Price</th>
+
+                    <th>Current Stock</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% if medicines %}
+
+                {% for medicine in medicines %}
+
+                <tr>
+
+                    <td>
+
+                        {{ medicine.id }}
+
+                    </td>
+
+                    <td>
+
+                        {{ medicine.name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ medicine.category }}
+
+                    </td>
+
+                    <td>
+
+                        {{ medicine.company }}
+
+                    </td>
+
+                    <td>
+
+                        {{ medicine.batch_no }}
+
+                    </td>
+
+                    <td>
+
+                        {{ medicine.expiry_date.strftime("%d-%m-%Y") }}
+
+                    </td>
+
+                    <td>
+
+                        ₹ {{ "%.2f"|format(medicine.price) }}
+
+                    </td>
+
+                    <td>
+
+                        <span class="badge badge-danger">
+
+                            {{ medicine.stock }}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        {% if medicine.stock == 0 %}
+
+                            <span class="badge badge-danger">
+
+                                Out of Stock
+
+                            </span>
+
+                        {% elif medicine.stock <= 5 %}
+
+                            <span class="badge badge-danger">
+
+                                Critical
+
+                            </span>
+
+                        {% elif medicine.stock <= 10 %}
+
+                            <span class="badge badge-warning">
+
+                                Low Stock
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge badge-success">
+
+                                In Stock
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="9" style="text-align:center;">
+
+                        <i class="fa-solid fa-circle-check fa-2x"></i>
+
+                        <br><br>
+
+                        No Low Stock Medicines Found
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<br>
+
+
+<div class="dashboard-section">
+
+    <h3>
+
+        Restocking Recommendation
+
+    </h3>
+
+    <table class="table">
+
+        <tr>
+
+            <td width="250">
+
+                Total Medicines To Restock
+
+            </td>
+
+            <td>
+
+                <strong>
+
+                    {{ medicines|length }}
+
+                </strong>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+
+                Suggested Minimum Stock
+
+            </td>
+
+            <td>
+
+                20 Units Per Medicine
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td>
+
+                Priority
+
+            </td>
+
+            <td>
+
+                Reorder medicines having stock below 10 units.
+
+            </td>
+
+        </tr>
+
+    </table>
+
+</div>
+
+{% endblock %}

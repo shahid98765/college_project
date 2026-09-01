@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block title %}Add Medicine{% endblock %}
+
+{% block page_title %}Add New Medicine{% endblock %}
+
+{% block content %}
+
+<div class="form-container">
+
+    <div class="form-card">
+
+        <h2>
+            <i class="fa-solid fa-pills"></i>
+            Add Medicine
+        </h2>
+
+        <form action="{{ url_for('add_product') }}"
+              method="POST"
+              enctype="multipart/form-data"
+              onsubmit="return validateMedicineForm();">
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Medicine Code</label>
+                    <input type="text"
+                           name="code"
+                           placeholder="Enter Medicine Code"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Medicine Name</label>
+                    <input type="text"
+                           name="name"
+                           placeholder="Enter Medicine Name"
+                           required>
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Manufacturer</label>
+                    <input type="text"
+                           name="brand"
+                           placeholder="Enter Manufacturer"
+                           required>
+                </div>
+
+                <div class="form-group">
+
+                    <label>Category</label>
+
+                    <select name="category" required>
+
+                        <option value="">Select Category</option>
+
+                        <option>Tablet</option>
+                        <option>Capsule</option>
+                        <option>Syrup</option>
+                        <option>Injection</option>
+                        <option>Cream</option>
+                        <option>Ointment</option>
+                        <option>Drops</option>
+                        <option>Inhaler</option>
+                        <option>Powder</option>
+                        <option>Gel</option>
+                        <option>Medical Device</option>
+                        <option>First Aid</option>
+                        <option>Surgical Item</option>
+                        <option>Health Supplement</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number"
+                           step="0.01"
+                           name="price"
+                           placeholder="Enter Price"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Stock Quantity</label>
+                    <input type="number"
+                           name="stock"
+                           placeholder="Enter Stock Quantity"
+                           required>
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Batch Number</label>
+                    <input type="text"
+                           name="batch_no"
+                           placeholder="Enter Batch Number"
+                           required>
+                </div>
+
+                <div class="form-group">
+
+                    <label>Manufacture Date</label>
+
+                    <input type="date"
+                           name="manufacture_date">
+
+                </div>
+
+            </div>
+
+            <!-- NEW EXPIRY DATE -->
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>Expiry Date</label>
+
+                    <input type="date"
+                           id="expiry_date"
+                           name="expiry_date"
+                           required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Medicine Image</label>
+
+                    <input type="file"
+                           name="image"
+                           accept="image/*">
+
+                </div>
+
+            </div>
+
+            <div class="form-buttons">
+
+                <button type="submit"
+                        class="btn btn-success">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    Save Medicine
+
+                </button>
+
+                <a href="{{ url_for('product_list') }}"
+                   class="btn btn-secondary">
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                    Cancel
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
